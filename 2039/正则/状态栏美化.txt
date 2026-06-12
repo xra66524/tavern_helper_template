@@ -1,0 +1,427 @@
+```html
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <style>
+    /* 政府档案风格样式 */
+    .gov-archive-container {
+      width: 100%;
+      font-family: "Times New Roman", SimSun, serif;
+      color: #2c3e50;
+      background-color: #fdfbf7;
+      border: 2px solid #2c3e50;
+      box-sizing: border-box;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .gov-header {
+      text-align: center;
+      border-bottom: 3px double #2c3e50;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+
+    .gov-title {
+      font-size: 18px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      margin: 0;
+      color: #8b0000;
+    }
+
+    .gov-subtitle {
+      font-size: 12px;
+      color: #555;
+      margin-top: 5px;
+    }
+
+    .gov-section {
+      margin-bottom: 10px;
+      border: 1px solid #dcdcdc;
+      background-color: #fff;
+    }
+
+    .gov-section-title {
+      background-color: #2c3e50;
+      color: #fff;
+      padding: 8px 10px;
+      font-weight: bold;
+      font-size: 14px;
+      letter-spacing: 1px;
+      margin: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .gov-section-title::after {
+      content: '▼';
+      font-size: 12px;
+      transition: transform 0.3s ease;
+    }
+
+    .gov-section.collapsed .gov-section-title::after {
+      content: '◀';
+    }
+
+    .gov-section-content {
+      padding: 10px;
+      max-height: 200px;
+      overflow-y: auto;
+      border-top: 1px solid #2c3e50;
+    }
+
+    .gov-section.collapsed .gov-section-content {
+      display: none;
+    }
+
+    .gov-section-content::-webkit-scrollbar {
+      width: 6px;
+    }
+    .gov-section-content::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    .gov-section-content::-webkit-scrollbar-thumb {
+      background: #8b0000;
+    }
+    .gov-section-content::-webkit-scrollbar-thumb:hover {
+      background: #5a0000;
+    }
+
+    .gov-row {
+      display: flex;
+      flex-wrap: wrap;
+      margin-bottom: 5px;
+      border-bottom: 1px dashed #eee;
+      padding-bottom: 3px;
+    }
+
+    .gov-row:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .gov-label {
+      font-weight: bold;
+      width: 40%;
+      color: #333;
+    }
+
+    .gov-value {
+      width: 60%;
+      color: #1a1a1a;
+    }
+
+    .gov-list {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .gov-list-item {
+      border-left: 2px solid #8b0000;
+      padding-left: 8px;
+      margin-bottom: 8px;
+      background-color: #f9f9f9;
+      padding-top: 5px;
+      padding-bottom: 5px;
+    }
+
+    .gov-sub-title {
+      font-weight: bold;
+      color: #2c3e50;
+      margin-bottom: 3px;
+    }
+
+    .gov-tag {
+      display: inline-block;
+      padding: 1px 4px;
+      background-color: #e0e0e0;
+      border: 1px solid #ccc;
+      font-size: 11px;
+      margin-right: 4px;
+      margin-bottom: 2px;
+    }
+  </style>
+  <script type="module">
+    function populateArchiveData() {
+      const all_vars = getAllVariables();
+      const stat_data = _.get(all_vars, 'stat_data', {});
+
+      /* --- 第一组：国际概况 --- */
+      const time = _.get(stat_data, '世界.当前时间', '未定义');
+      const date = _.get(stat_data, '世界.当前日期', '未定义');
+      const global_event = _.get(stat_data, '国际情况.国际大事件', '暂无重大事件');
+
+      $('#val-time-date').text(`${date} ${time}`);
+      $('#val-global-event').text(global_event);
+
+      const next_meeting = _.get(stat_data, '国际情况.下一个国际重大会议', {});
+      const meeting_name = _.get(next_meeting, '名称', '无');
+      const meeting_time = _.get(next_meeting, '举办时间', '未定');
+      $('#val-next-meeting').text(`${meeting_name} (${meeting_time})`);
+
+      const attitudes = _.get(stat_data, '国际情况.世界主要国家对日本态度', {});
+      let attitudes_html = '';
+      if (Object.keys(attitudes).length > 0) {
+        Object.entries(attitudes).forEach(([country, data]) => {
+          const support = _.get(data, '支持度', '未知');
+          const demand = _.get(data, '政治诉求', '无');
+          attitudes_html += `
+            <div class="gov-list-item">
+              <div class="gov-sub-title">${country}</div>
+              <div style="font-size: 12px;">支持度: ${support} | 诉求: ${demand}</div>
+            </div>`;
+        });
+      } else {
+        attitudes_html = '<div style="color:#999; font-size:12px;">暂无外交数据</div>';
+      }
+      $('#list-global-attitudes').html(attitudes_html);
+
+      /* --- 第二组：国内概况 --- */
+      const csdc_rate = _.get(stat_data, '日本政府情况.日元对CSDC汇率', '未提供');
+      const usd_rate = _.get(stat_data, '日本政府情况.日元对美元汇率', '未提供');
+      const gdp = _.get(stat_data, '日本政府情况.国内GDP总值', '未提供');
+      const unemployment = _.get(stat_data, '日本政府情况.失业率', '未提供');
+      const public_support = _.get(stat_data, '日本政府情况.民意支持率', '未提供');
+
+      $('#val-exchange-rate').text(`CSDC: ${csdc_rate} | USD: ${usd_rate}`);
+      $('#val-gdp').text(gdp);
+      $('#val-unemployment').text(`${unemployment}%`);
+      $('#val-public-support').text(`${public_support}%`);
+
+      const factions = _.get(stat_data, '日本国内情况.主要政治势力', {});
+      let factions_html = '';
+      if (Object.keys(factions).length > 0) {
+        Object.entries(factions).forEach(([name, data]) => {
+          const spectrum = _.get(data, '政治光谱', '未知');
+          const demand = _.get(data, '政治诉求', '未知');
+          const area = _.get(data, '主要势力范围', '未知');
+          const support = _.get(data, '支持度', '未知');
+          const leader = _.get(data, '领导人', '未知');
+
+          let figures_html = '';
+          const figures = _.get(data, '主要人物', {});
+          Object.entries(figures).forEach(([fig_name, fig_desc]) => {
+            figures_html += `<span class="gov-tag">${fig_name}(${fig_desc})</span>`;
+          });
+
+          factions_html += `
+            <div class="gov-list-item">
+              <div class="gov-sub-title">${name} (领导人: ${leader})</div>
+              <div style="font-size: 12px; margin-bottom: 2px;">光谱: ${spectrum} | 支持度: ${support}</div>
+              <div style="font-size: 12px; margin-bottom: 2px;">诉求: ${demand}</div>
+              <div style="font-size: 12px; margin-bottom: 2px;">势力范围: ${area}</div>
+              <div style="font-size: 12px; color: #555;">骨干: ${figures_html || '暂无'}</div>
+            </div>`;
+        });
+      } else {
+        factions_html = '<div style="color:#999; font-size:12px;">暂无政治势力数据</div>';
+      }
+      $('#list-domestic-factions').html(factions_html);
+
+      /* --- 第三组：政府概况 --- */
+      const cabinet_term = _.get(stat_data, '日本政府情况.本届内阁届数', '未知');
+      const cabinet_duration = _.get(stat_data, '日本政府情况.本届内阁持续时间', '未知');
+      const cabinet_task = _.get(stat_data, '日本政府情况.内阁目前任务', '无');
+
+      $('#val-cabinet-term').text(`第 ${cabinet_term} 届`);
+      $('#val-cabinet-duration').text(cabinet_duration);
+      $('#val-cabinet-task').text(cabinet_task);
+
+      const ministries = _.get(stat_data, '日本政府情况.各省厅', {});
+      let ministries_html = '';
+      if (Object.keys(ministries).length > 0) {
+        Object.entries(ministries).forEach(([name, data]) => {
+          const minister = _.get(data, '大臣', '空缺');
+          const vice_minister = _.get(data, '副大臣', '空缺');
+          const vice_sec = _.get(data, '事务次官', '空缺');
+          const chief = _.get(data, '长官', '空缺');
+
+          const task = _.get(data, '目前主要处理事务', '无');
+          const imp = _.get(data, '重要程度', 0);
+          const coop = _.get(data, '配合度', 0);
+          const ctrl = _.get(data, '掌控度', 0);
+          const staff = _.get(data, '现职员人数', 0);
+
+          /* 逻辑判断：内阁府或xx省隐藏长官，xx厅隐藏事务次官 */
+          let showChief = true;
+          let showViceSec = true;
+
+          if (name === '内阁府' || name.endsWith('省')) {
+            showChief = false;
+          }
+          if (name.endsWith('厅')) {
+            showViceSec = false;
+          }
+
+          /* 构建高层人员显示字符串 */
+          let officials_html = `大臣: ${minister} | 副大臣: ${vice_minister}`;
+          if (showViceSec) {
+            officials_html += ` | 事务次官: ${vice_sec}`;
+          }
+          if (showChief) {
+            officials_html += ` | 长官: ${chief}`;
+          }
+
+          ministries_html += `
+            <div class="gov-list-item">
+              <div class="gov-sub-title">${name}</div>
+              <div style="font-size: 12px; margin-bottom: 2px; color: #8b0000;">${officials_html}</div>
+              <div style="font-size: 12px; margin-bottom: 2px;">重要度: ${imp} | 配合度: ${coop} | 掌控度: ${ctrl} | 职员: ${staff}人</div>
+              <div style="font-size: 12px; color: #555;">主要事务: ${task}</div>
+            </div>`;
+        });
+      } else {
+        ministries_html = '<div style="color:#999; font-size:12px;">暂无省厅数据</div>';
+      }
+      $('#list-ministries').html(ministries_html);
+
+      /* --- 第四组：重要角色 --- */
+      const characters = _.get(stat_data, '各角色情况', {});
+      let chars_html = '';
+      if (Object.keys(characters).length > 0) {
+        Object.entries(characters).forEach(([name, data]) => {
+          const position = _.get(data, '当前职位', '未知');
+          const recent_affairs = _.get(data, '近期事务', '无');
+          const task = _.get(data, '目前任务', '无');
+          const health = _.get(data, '身体状况', '未知');
+
+          let healthColor = '#333';
+          if(health === '生病' || health === '亚健康') healthColor = '#d35400';
+          if(health === '重病') healthColor = '#8b0000';
+
+          chars_html += `
+            <div class="gov-list-item">
+              <div class="gov-sub-title">${name} <span style="font-size:11px; font-weight:normal; color:${healthColor};">[${health}]</span></div>
+              <div style="font-size: 12px; margin-bottom: 2px;">职位: ${position}</div>
+              <div style="font-size: 12px; margin-bottom: 2px;">近期事务: ${recent_affairs}</div>
+              <div style="font-size: 12px; color: #555;">目前任务: ${task}</div>
+            </div>`;
+        });
+      } else {
+        chars_html = '<div style="color:#999; font-size:12px;">暂无角色数据</div>';
+      }
+      $('#list-characters').html(chars_html);
+    }
+
+    function toggleSection($header) {
+      $header.parent('.gov-section').toggleClass('collapsed');
+    }
+
+    async function init() {
+      await waitGlobalInitialized('Mvu');
+      populateArchiveData();
+
+      eventOn(Mvu.events.VARIABLE_UPDATE_ENDED, () => {
+        populateArchiveData();
+      });
+
+      $('.gov-section-title').on('click', function () {
+        toggleSection($(this));
+      });
+    }
+
+    $(errorCatched(init));
+  </script>
+</head>
+<body>
+  <div class="gov-archive-container">
+    <div class="gov-header">
+      <h1 class="gov-title">内阁情报调查室 综合态势简报</h1>
+      <div class="gov-subtitle">CONFIDENTIAL / 内部机密</div>
+    </div>
+
+    <!-- 卷宗 I -->
+    <div class="gov-section collapsed">
+      <div class="gov-section-title">
+        <span>[ 卷宗 I ] 国际战略态势</span>
+      </div>
+      <div class="gov-section-content">
+        <div class="gov-row">
+          <div class="gov-label">当前基准时间</div>
+          <div class="gov-value" id="val-time-date">加载中...</div>
+        </div>
+        <div class="gov-row">
+          <div class="gov-label">全球通报事件</div>
+          <div class="gov-value" id="val-global-event" style="color: #8b0000; font-weight: bold;">加载中...</div>
+        </div>
+        <div class="gov-row">
+          <div class="gov-label">下期高层峰会</div>
+          <div class="gov-value" id="val-next-meeting">加载中...</div>
+        </div>
+        <div style="margin-top: 10px; font-weight: bold; font-size: 12px; border-bottom: 1px solid #ccc; margin-bottom: 5px;">各国外交评级与动向：</div>
+        <div id="list-global-attitudes" class="gov-list"></div>
+      </div>
+    </div>
+
+    <!-- 卷宗 II -->
+    <div class="gov-section collapsed">
+      <div class="gov-section-title">
+        <span>[ 卷宗 II ] 国内宏观态势</span>
+      </div>
+      <div class="gov-section-content">
+        <div class="gov-row">
+          <div class="gov-label">基准汇率</div>
+          <div class="gov-value" id="val-exchange-rate">加载中...</div>
+        </div>
+        <div class="gov-row">
+          <div class="gov-label">GDP指标</div>
+          <div class="gov-value" id="val-gdp">加载中...</div>
+        </div>
+        <div class="gov-row">
+          <div class="gov-label">登记失业率</div>
+          <div class="gov-value" id="val-unemployment">加载中...</div>
+        </div>
+        <div class="gov-row">
+          <div class="gov-label">当前民意支持</div>
+          <div class="gov-value" id="val-public-support">加载中...</div>
+        </div>
+        <div style="margin-top: 10px; font-weight: bold; font-size: 12px; border-bottom: 1px solid #ccc; margin-bottom: 5px;">国内主要政治派系：</div>
+        <div id="list-domestic-factions" class="gov-list"></div>
+      </div>
+    </div>
+
+    <!-- 卷宗 III -->
+    <div class="gov-section collapsed">
+      <div class="gov-section-title">
+        <span>[ 卷宗 III ] 中央省厅机能</span>
+      </div>
+      <div class="gov-section-content">
+        <div class="gov-row">
+          <div class="gov-label">内阁届数</div>
+          <div class="gov-value" id="val-cabinet-term">加载中...</div>
+        </div>
+        <div class="gov-row">
+          <div class="gov-label">执政时长</div>
+          <div class="gov-value" id="val-cabinet-duration">加载中...</div>
+        </div>
+        <div class="gov-row">
+          <div class="gov-label">当前核心议题</div>
+          <div class="gov-value" id="val-cabinet-task" style="font-weight: bold;">加载中...</div>
+        </div>
+        <div style="margin-top: 10px; font-weight: bold; font-size: 12px; border-bottom: 1px solid #ccc; margin-bottom: 5px;">各省厅职能评级：</div>
+        <div id="list-ministries" class="gov-list"></div>
+      </div>
+    </div>
+
+    <!-- 卷宗 IV -->
+    <div class="gov-section collapsed" style="margin-bottom: 0;">
+      <div class="gov-section-title">
+        <span>[ 卷宗 IV ] 重点关注目标</span>
+      </div>
+      <div class="gov-section-content">
+        <div id="list-characters" class="gov-list"></div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
+```
