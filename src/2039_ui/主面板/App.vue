@@ -23,20 +23,40 @@
             <div class="placeholder-title">内阁面板</div>
             <div class="placeholder-desc">阁僚双线追踪、官僚操控、少女视角将在这里展开。</div>
           </div>
+          <div v-else-if="currentTab === 'ministry'" class="placeholder placeholder-ministry">
+            <div class="placeholder-icon">🏢</div>
+            <div class="placeholder-title">省厅面板</div>
+            <div class="placeholder-desc">各省厅运行状态、主导政策与势力博弈将在这里展示。</div>
+          </div>
+          <div v-else-if="currentTab === 'livelihood'" class="placeholder placeholder-livelihood">
+            <div class="placeholder-icon">🏘️</div>
+            <div class="placeholder-title">民生面板</div>
+            <div class="placeholder-desc">物价、就业、治安感知与社会情绪等民生指标将在这里呈现。</div>
+          </div>
+          <div v-else-if="currentTab === 'characters'" class="placeholder placeholder-characters">
+            <div class="placeholder-icon">👥</div>
+            <div class="placeholder-title">人物面板</div>
+            <div class="placeholder-desc">关键人物追踪——政党领袖、在野势力、外国代理人等将在这里显示。</div>
+          </div>
           <div v-else-if="currentTab === 'policy'" class="placeholder placeholder-policy">
             <div class="placeholder-icon">📋</div>
             <div class="placeholder-title">政策追踪</div>
             <div class="placeholder-desc">政策生命周期、副作用链条与势力影响将在这里呈现。</div>
           </div>
-          <div v-else-if="currentTab === 'election'" class="placeholder placeholder-election">
-            <div class="placeholder-icon">🗳️</div>
-            <div class="placeholder-title">选举看板</div>
-            <div class="placeholder-desc">候选人排名、舆论热度与外部干预痕迹将在这里显示。</div>
+          <div v-else-if="currentTab === 'international'" class="placeholder placeholder-international">
+            <div class="placeholder-icon">🌐</div>
+            <div class="placeholder-title">国际面板</div>
+            <div class="placeholder-desc">各国对日态度、CSAT/NATO 阵营博弈与外交事件将在这里追踪。</div>
           </div>
           <div v-else-if="currentTab === 'crisis'" class="placeholder placeholder-crisis">
             <div class="placeholder-icon">⚠️</div>
             <div class="placeholder-title">危机仪表盘</div>
             <div class="placeholder-desc">治安、经济、粮食、能源四维危机将在这里可视化。</div>
+          </div>
+          <div v-else-if="currentTab === 'election'" class="placeholder placeholder-election">
+            <div class="placeholder-icon">🗳️</div>
+            <div class="placeholder-title">选举看板</div>
+            <div class="placeholder-desc">候选人排名、舆论热度与外部干预痕迹将在这里显示。</div>
           </div>
         </div>
       </Transition>
@@ -50,15 +70,23 @@ import StatusBar from './状态栏.vue';
 
 const tabs = [
   { key: 'cabinet', label: '内阁', icon: '🏛️' },
+  { key: 'ministry', label: '省厅', icon: '🏢' },
+  { key: 'livelihood', label: '民生', icon: '🏘️' },
+  { key: 'characters', label: '人物', icon: '👥' },
   { key: 'policy', label: '政策', icon: '📋' },
-  { key: 'election', label: '选举', icon: '🗳️' },
+  { key: 'international', label: '国际', icon: '🌐' },
   { key: 'crisis', label: '危机', icon: '⚠️' },
+  { key: 'election', label: '选举', icon: '🗳️' },
 ] as const;
 
 const expanded = ref(false);
-const currentTab = ref<'cabinet' | 'policy' | 'election' | 'crisis'>('cabinet');
+const currentTab = ref<
+  'cabinet' | 'ministry' | 'livelihood' | 'characters' | 'policy' | 'international' | 'crisis' | 'election'
+>('cabinet');
 
-const toggleTab = (tab: 'cabinet' | 'policy' | 'election' | 'crisis') => {
+const toggleTab = (
+  tab: 'cabinet' | 'ministry' | 'livelihood' | 'characters' | 'policy' | 'international' | 'crisis' | 'election',
+) => {
   if (currentTab.value === tab) {
     expanded.value = !expanded.value;
   } else {

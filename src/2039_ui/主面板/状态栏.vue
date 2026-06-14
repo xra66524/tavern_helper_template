@@ -5,30 +5,46 @@
         <span class="title-mark">2039</span>
         <span class="title-text">政局监测面板</span>
       </div>
-      <span class="live-indicator">
+      <span class="live-indicator mock">
         <span class="live-dot"></span>
-        待同步
+        MOCK
+      </span>
+    </div>
+    <div class="status-console">
+      <span class="console-item">
+        <span class="console-label">DATE</span>
+        <span class="console-value">----.--.--</span>
+      </span>
+      <span class="console-item">
+        <span class="console-label">TIME</span>
+        <span class="console-value">--:--</span>
+      </span>
+      <span class="console-item mode">
+        <span class="console-label">MODE</span>
+        <span class="console-value">--</span>
       </span>
     </div>
     <div class="status-row-1">
       <span class="phase-tag placeholder">
-        <span class="tag-icon">●</span>
-        政治阶段
+        <span class="tag-label">阶段</span>
+        <strong class="tag-value">--</strong>
       </span>
       <span class="pm-tag placeholder">
-        <span class="tag-icon">♛</span>
-        首相：--
+        <span class="tag-label">首相</span>
+        <strong class="tag-value">--</strong>
       </span>
       <span class="crisis-tag placeholder">
-        <span class="tag-icon">⚠</span>
-        危机：--
+        <span class="tag-label">危机</span>
+        <strong class="tag-value">--</strong>
       </span>
     </div>
-    <div class="status-row-2">
-      <span class="secondary-tag">稳定度 <strong>--</strong></span>
-      <span class="secondary-tag">外压 <strong>--</strong></span>
-      <span class="secondary-tag">合法性 <strong>--</strong></span>
-      <span class="secondary-tag">控制力 <strong>--</strong></span>
+    <div class="status-matrix">
+      <span class="secondary-tag"><span class="s-label">稳定</span> <strong>--</strong></span>
+      <span class="secondary-tag"><span class="s-label">外压</span> <strong>--</strong></span>
+      <span class="secondary-tag"><span class="s-label">合法</span> <strong>--</strong></span>
+      <span class="secondary-tag"><span class="s-label">控制</span> <strong>--</strong></span>
+      <span class="secondary-tag economy-tag"><span class="s-label">通胀</span> <strong>--</strong></span>
+      <span class="secondary-tag security-tag"><span class="s-label">治安</span> <strong>--</strong></span>
     </div>
   </div>
 </template>
@@ -113,6 +129,10 @@ const emit = defineEmits<{
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+
+  &.mock {
+    color: #856e3b;
+  }
 }
 
 .live-dot {
@@ -120,8 +140,70 @@ const emit = defineEmits<{
   height: 5px;
   border-radius: 999px;
   background: #64748b;
-  animation: breathe 1.8s ease-in-out infinite;
+
+  .mock & {
+    background: #a08c3c;
+    animation: breathe 1.8s ease-in-out infinite;
+  }
 }
+
+// ── 控制台读数行（DATE / TIME / MODE） ──
+
+.status-console {
+  display: flex;
+  gap: 0;
+  align-items: stretch;
+  margin-bottom: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.console-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 5px 6px 4px;
+  background: rgba(15, 23, 42, 0.5);
+  border-right: 1px solid rgba(148, 163, 184, 0.08);
+
+  &:last-child {
+    border-right: none;
+  }
+
+  &.mode {
+    background: rgba(139, 92, 246, 0.06);
+  }
+}
+
+.console-label {
+  color: #475569;
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+
+  .mode & {
+    color: #6d5acf;
+  }
+}
+
+.console-value {
+  color: #cbd5e1;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'Consolas', 'Courier New', monospace;
+  letter-spacing: 0.06em;
+
+  .mode & {
+    color: #c4b5fd;
+  }
+}
+
+// ── 第一行：3 个核心批示 ──
 
 .status-row-1 {
   display: flex;
@@ -130,71 +212,100 @@ const emit = defineEmits<{
   flex-wrap: wrap;
 }
 
-.status-row-2 {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-top: 8px;
-}
+// ── 核心批示标签 ──
 
-.phase-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 9px;
-  background: rgba(239, 68, 68, 0.12);
-  border-left: 3px solid #ef4444;
-  color: #fca5a5;
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.pm-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 9px;
-  background: rgba(99, 102, 241, 0.1);
-  border-left: 3px solid #6366f1;
-  color: #a5b4fc;
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
+.phase-tag,
+.pm-tag,
 .crisis-tag {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 4px 9px;
-  background: rgba(234, 179, 8, 0.1);
-  border-left: 3px solid #eab308;
-  color: #fde68a;
-  font-size: 12px;
+  padding: 4px 10px;
+  font-size: 11px;
   font-weight: 700;
   white-space: nowrap;
 }
 
-.tag-icon {
+.phase-tag {
+  background: rgba(239, 68, 68, 0.12);
+  border-left: 3px solid #ef4444;
+  color: #fca5a5;
+}
+
+.pm-tag {
+  background: rgba(99, 102, 241, 0.1);
+  border-left: 3px solid #6366f1;
+  color: #a5b4fc;
+}
+
+.crisis-tag {
+  background: rgba(234, 179, 8, 0.1);
+  border-left: 3px solid #eab308;
+  color: #fde68a;
+}
+
+.tag-label {
   font-size: 10px;
   line-height: 1;
   opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.tag-value {
+  color: inherit;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+// ── 第二行：2×3 指标矩阵 ──
+
+.status-matrix {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 4px;
+  margin-top: 8px;
 }
 
 .secondary-tag {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
   padding: 3px 7px;
   background: rgba(15, 23, 42, 0.45);
-  border: 1px solid rgba(148, 163, 184, 0.08);
+  border: 1px solid rgba(148, 163, 184, 0.06);
+  border-left: 2px solid #475569;
   color: #64748b;
   font-size: 10px;
   font-weight: 600;
   white-space: nowrap;
 
+  .s-label {
+    opacity: 0.65;
+  }
+
   strong {
     color: #94a3b8;
     font-weight: 700;
+    font-family: 'Consolas', 'Courier New', monospace;
+    letter-spacing: 0.04em;
+  }
+
+  &.economy-tag {
+    border-left-color: #947d2a;
+
+    strong {
+      color: #cbb840;
+    }
+  }
+
+  &.security-tag {
+    border-left-color: #2a6b3a;
+
+    strong {
+      color: #6dbd82;
+    }
   }
 }
 
@@ -255,36 +366,61 @@ const emit = defineEmits<{
     height: 4px;
   }
 
-  .status-row-1 {
-    display: flex;
-    gap: 4px;
-    flex-wrap: wrap;
+  .status-console {
+    margin-bottom: 6px;
+    border-radius: 2px;
   }
 
-  .status-row-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3px 4px;
-    margin-top: 6px;
+  .console-item {
+    padding: 3px 4px 2px;
+    gap: 1px;
+  }
+
+  .console-label {
+    font-size: 6px;
+    letter-spacing: 0.08em;
+  }
+
+  .console-value {
+    font-size: 9px;
+    letter-spacing: 0.04em;
+  }
+
+  .status-row-1 {
+    gap: 4px;
   }
 
   .phase-tag,
   .pm-tag,
   .crisis-tag {
-    padding: 3px 6px;
+    padding: 3px 7px;
     font-size: 10px;
     gap: 3px;
     border-left-width: 2px;
   }
 
-  .tag-icon {
+  .tag-label {
     font-size: 8px;
+  }
+
+  .tag-value {
+    font-size: 10px;
+  }
+
+  .status-matrix {
+    grid-template-columns: 1fr 1fr;
+    gap: 3px;
+    margin-top: 5px;
   }
 
   .secondary-tag {
     padding: 3px 6px;
     font-size: 9px;
-    width: auto;
+    gap: 3px;
+
+    .s-label {
+      font-size: 8px;
+    }
 
     strong {
       font-size: 9px;
