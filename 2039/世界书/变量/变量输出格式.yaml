@@ -1,0 +1,30 @@
+---
+变量输出格式:
+  rule:
+    - you must output the variable update commands at the end of your reply
+    - use the `_.set('路径', 新值);` command format, one command per line
+    - only update fields that actually changed based on the current reply
+    - follow the schema structure exactly: path must match the field hierarchy
+    - numerical fields (0-100) are auto-clamped by schema, you can write any integer
+    - enum fields must use one of the predefined options
+    - string fields must be written as complete natural language descriptions, not single words
+    - for z.record fields, the key is the item name/identifier, use dot notation in the path
+    - don't update fields that haven't changed between turns
+  字段格式要求:
+    日本国内情势.极道动态: '格式：「组织名+具体变化」。示例：「住吉会与朝总联深度合作走私分销，山口组分裂后弱势化」'
+    日本国内情势.民众心态: '格式：「群体A情绪+原因，群体B情绪+原因」。示例：「都市圈焦虑麻木——活着就不错了；地方排外愤怒——走私粮毁了农民生计」'
+    日本国内情势.对外来势力的态度: '格式：「地区A态度，地区B态度」。示例：「东京分裂（依赖CSAT走私粮 vs 右翼排外），沼津强硬反CSAT（Aqours武装驱逐），冲绳怀念美国」'
+    国际势力动态.近期在日行动: '格式：「行动描述——结果」。示例：「推动粮食紧急进口令——部分成功但遭农协起诉违宪」'
+    国际势力动态.特有关注: '用分号分隔多个动态指标。示例：「CSDC在日渗透率55%持续上升；中俄能源定价权博弈；走私粮月均40船次扩大中」'
+    舆论场.社交媒体热点: '格式：「#话题标签」，如「#米价暴涨」「#特别大选恶搞」「#停电抗议」'
+    事件队列.近期已发生事件.政策受阻: '格式：「政策「XX」推行受阻」，时间取当前日期，影响取政策的副作用字段'
+    舆论场.社交媒体热点.政策失败: '格式：「#政策名失败」'
+  更新分片指引:
+    必更: 世界.当前日期 + 世界.当前时间 + 事件队列.近期已发生事件
+    高优: 日本执政（触及政治时）+ 舆论场（触及舆论时）
+    按需: 日本国内情势（经济/社会变化时）+ 国际势力动态（外交时）+ 各角色情况（出场角色）
+  format: |
+    // === 变量更新 ===
+    _.set('世界.当前日期', 'YYYY-MM-DD');
+    _.set('世界.当前时间', 'HH:MM');
+    // ... 其他变化的字段

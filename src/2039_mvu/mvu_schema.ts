@@ -73,6 +73,7 @@ import {
   自警团武装化程度列表,
   货币信任度列表,
   选举模式列表,
+  选举进程阶段列表,
   通胀等级列表,
   预算影响列表,
   首相状态列表,
@@ -100,42 +101,40 @@ const 世界Schema = z.object({
 const 阁僚Schema = z.object({
   姓名: z.string(),
   年龄: z.coerce.number(),
-  原身份: z.string().describe('就任前的身份，如「花咲川高三学生」「前自民党议员」「朝总联干部」'),
+  原身份: z.string().describe('就任前的身份'),
 
   // 政治能力（核心落差维度）
-  政治立场: z.string().describe('如「极右翼」「中间」「不懂政治」「反CSAT」'),
+  政治立场: z.string().describe('阁僚的政治立场'),
   对职务理解度: z.enum(对职务理解度列表),
   实际履职状态: z.enum(实际履职状态列表),
 
   // 操控与被操控（双向权力关系）
-  幕后操控者: z.string().describe('试图操控该职位的人或势力，如「事务次官会议」「CIA」「朝总联」「无（自主决策）」'),
+  幕后操控者: z.string().describe('试图操控该职位的人或势力'),
   操控程度: z.coerce
     .number()
     .transform(v => _.clamp(v, 0, 100))
     .describe('0=完全自主，100=纯傀儡'),
-  被操控方式: z.string().describe('如「提供发言稿」「威胁家人」「金钱收买」「情感操控」「无」'),
+  被操控方式: z.string().describe('操控该职位的方式'),
 
   // 反向影响力
   对官僚体系的影响力: z.coerce
     .number()
     .transform(v => _.clamp(v, 0, 100))
     .describe('0=完全被忽视，100=能左右官僚决策'),
-  影响力来源: z
-    .string()
-    .describe('如「偶像人气带来的舆论压力」「与某派系的秘密联盟」「掌握关键信息」「家族背景」「无」'),
+  影响力来源: z.string().describe('影响力的来源'),
   与官僚体系的争斗状态: z.enum(与官僚体系的争斗状态列表),
   官僚体系的应对: z.string().describe('官僚/利益集团对阁僚反抗的反应'),
 
   // 个人状态（少女视角）
   对当前职位的态度: z.enum(对当前职位的态度列表),
-  当前心理状态: z.string().describe('如「想回家练琴」「担心被暗杀」「觉得好玩」「压力大到失眠」'),
+  当前心理状态: z.string().describe('当前的心理状态'),
   更关心的事: z.string().describe('她心里真正在意的'),
 
   // 安全与忠诚
   忠诚度: z.coerce
     .number()
     .transform(v => _.clamp(v, 0, 100))
-    .describe('对首相/内阁的忠诚，0=随时背叛'),
+    .describe('对首相/内阁的忠诚度，0-100'),
   暗杀威胁等级: z.enum(暗杀威胁等级列表),
   人身安全状况: z.enum(人身安全状况列表),
 });
@@ -147,7 +146,7 @@ const 本届内阁Schema = z.object({
   首相政治立场: z.enum(政治立场列表),
   执政联盟: z.array(z.string().describe('联盟势力名')),
   内阁稳定度: z.coerce.number().transform(v => _.clamp(v, 0, 100)),
-  主要阁僚: z.record(z.string().describe('职位名，如「外务大臣」「防卫大臣」'), 阁僚Schema),
+  主要阁僚: z.record(z.string().describe('职位名'), 阁僚Schema),
 });
 
 // ─── 政策子Schema ─────────────────────────────────────────
@@ -162,7 +161,7 @@ const 政策Schema = z.object({
   提出者理解度: z.enum(提出者理解度列表),
   主要推动方: z.string().describe('真正在推动政策落地的力量'),
   主要反对方: z.string().describe('主要反对势力'),
-  反对方式: z.string().describe('如「议会杯葛」「官僚拖延」「媒体舆论攻击」「暴力阻挠」「无」'),
+  反对方式: z.string().describe('主要反对势力的反对方式'),
 
   // 执行层面
   主管省厅: z.string().describe('负责执行该政策的省厅'),
@@ -184,7 +183,7 @@ const 政策Schema = z.object({
 
   // 时间线
   提出日期: z.string(),
-  关键节点: z.string().describe('如「下月议会表决」「已进入审议停滞期」'),
+  关键节点: z.string().describe('政策推进的关键时间节点'),
   备注: z.string().describe('其他特殊情况说明'),
 });
 
@@ -192,21 +191,51 @@ const 政策Schema = z.object({
 
 const 候选人Schema = z.object({
   姓名: z.string(),
-  所属党派: z.string().describe('或「无党派」'),
+  所属党派: z.string().describe('所属党派'),
   背景: z.enum(候选人背景列表),
   当前票数: z.coerce.number(),
   威胁等级: z.enum(候选人威胁等级列表),
-  外部支持: z.string().describe('幕后支持势力，如「CIA」「朝总联」「俄罗斯GRU」「无」'),
+  外部支持: z.string().describe('幕后支持势力'),
 });
 
 // ─── 选举进程子Schema ─────────────────────────────────────
 
+/** 两种选举模式的共用字段 + 模式特有字段 */
 const 选举进程Schema = z.object({
+  // ── 共用字段 ──
   类型: z.enum(选举模式列表),
-  阶段: z.string().describe('根据类型不同含义不同'),
+  阶段: z.enum(选举进程阶段列表),
   候选人排名: z.array(候选人Schema),
   选举热度: z.coerce.number().transform(v => _.clamp(v, 0, 100)),
   备注: z.string().describe('选举的特殊情况说明'),
+
+  // ── 正常首相指名模式特有字段 ──
+  执政党推荐候选人: z.string().optional().describe('【正常模式】执政党推荐的候选人姓名，特别大选模式下为空'),
+  在野党联合候选人: z.string().optional().describe('【正常模式】在野党联合提名的候选人姓名，特别大选模式下为空'),
+  议会各党派议席分布: z
+    .array(
+      z.object({
+        党派: z.string(),
+        众议院议席: z.coerce.number(),
+        参议院议席: z.coerce.number(),
+        倾向: z.string().describe('各党派当前对选举的倾向'),
+      }),
+    )
+    .optional()
+    .describe('【正常模式】议会内各党派的议席分布情况'),
+
+  // ── 2039特别大选模式特有字段 ──
+  青少年参选人比例: z.coerce
+    .number()
+    .transform(v => _.clamp(v, 0, 100))
+    .optional()
+    .describe('【特别大选】12-18岁参选人占全部候选人的百分比，反映「互联网恶搞参选」的程度'),
+  互联网恶搞热度: z.coerce
+    .number()
+    .transform(v => _.clamp(v, 0, 100))
+    .optional()
+    .describe('【特别大选】社交媒体上对选举的恶搞/娱乐化程度'),
+  外部势力操纵痕迹: z.string().optional().describe('【特别大选】外部势力是否在操纵互联网投票'),
 });
 
 // ─── 各省厅子Schema ───────────────────────────────────────
@@ -216,15 +245,15 @@ const 各省厅Schema = z.object({
   事务次官会议掌控度: z.coerce
     .number()
     .transform(v => _.clamp(v, 0, 100))
-    .describe('事务次官会议/官僚体系对该省厅实际运作的掌控程度'),
+    .describe('事务次官会议/官僚体系对该省厅实际运作的掌控程度，0-100'),
   内阁掌控度: z.coerce
     .number()
     .transform(v => _.clamp(v, 0, 100))
-    .describe('阁僚（大臣）对该省厅的实质驱动力'),
+    .describe('阁僚对该省厅的实质驱动力，0-100'),
   对CSAT态度: z.coerce.number().transform(v => _.clamp(v, -100, 100)),
   对美态度: z.coerce.number().transform(v => _.clamp(v, -100, 100)),
   倾向派系: z.string().describe('该省厅在事务次官会议中倾向于哪个派系'),
-  主要下属局厅: z.array(z.string()).describe('当前活跃/值得关注的下属局厅'),
+  主要下属局厅: z.array(z.string()).describe('当前活跃的下属局厅'),
   当前焦点: z.string().describe('该省厅当前最重要的1-2件事'),
 });
 
@@ -236,8 +265,8 @@ const 事务次官会议内部派系Schema = z.object({
   政治倾向: z.enum(派系政治倾向列表),
   对内阁态度: z.enum(对内阁态度列表),
   实力权重: z.coerce.number().transform(v => _.clamp(v, 0, 100)),
-  当前策略: z.string().describe('如「逐步架空内阁」「等待大选结果」「暗中与CSAT接触」'),
-  与哪些外部势力有联系: z.string().describe('如「与CSAT日本代表处有秘密沟通渠道」「与CIA残留网络有联系」'),
+  当前策略: z.string().describe('当前策略'),
+  与哪些外部势力有联系: z.string().describe('与外部势力的联系'),
 });
 
 // ─── 已决议事项子Schema ───────────────────────────────────
@@ -298,11 +327,11 @@ const 事务次官会议Schema = z.object({
 const 政治势力Schema = z.object({
   势力名: z.string(),
   类型: z.enum(['政党', '武装团体', '官僚系统', '灰色势力', '地方豪强', '外部势力代理人', '民间团体']),
-  政治光谱: z.string().describe('如「极右翼」「中间偏右」「左翼」'),
+  政治光谱: z.string().describe('政治光谱位置'),
   核心诉求: z.string(),
   对CSAT态度: z.coerce.number().transform(v => _.clamp(v, -100, 100)),
   对美态度: z.coerce.number().transform(v => _.clamp(v, -100, 100)),
-  当前策略: z.string().describe('如「观望」「对抗」「渗透」「合作」'),
+  当前策略: z.string().describe('当前策略'),
   支持度: z.coerce.number().transform(v => _.clamp(v, 0, 100)),
   武装力量等级: z.enum(['无', '极低', '低', '中等', '高', '极高']),
 });
@@ -326,7 +355,7 @@ export const 日本执政Schema = z.object({
 
 const 区域分化Schema = z.object({
   区域: z.string(),
-  特征: z.string().describe('如「生命维持餐依赖区+自警团活跃」「极右翼反CSAT据点」'),
+  特征: z.string().describe('区域特征描述'),
 });
 
 export const 日本国内情势Schema = z.object({
@@ -383,7 +412,7 @@ export const 日本国内情势Schema = z.object({
   // 区域分化与社会心理
   区域分化: z.array(区域分化Schema).max(6),
   民众心态: z.string().describe('社会心态的分裂状态'),
-  对外来势力的态度: z.string().describe('地域差异极大的分裂态度'),
+  对外来势力的态度: z.string().describe('不同地域对外来势力的态度'),
   年轻人出路分化: z.array(z.enum(年轻人出路分化列表)),
 });
 
@@ -399,12 +428,12 @@ const 国际势力Schema = z.object({
 
   在日行动能力: z.enum(在日行动能力列表),
   在日情报网络: z.enum(在日情报网络列表),
-  近期在日行动: z.string().describe('近期在日最重要的1-2个行动及结果'),
+  近期在日行动: z.string().describe('近期在日行动及结果'),
 
   内部团结度: z.coerce.number().transform(v => _.clamp(v, 0, 100)),
   内部矛盾: z.string().describe('对日问题上的内部分歧'),
 
-  特有关注: z.string().describe('该势力当前最值得追踪的独特变化'),
+  特有关注: z.string().describe('当前值得追踪的动态指标'),
 });
 
 export const 国际势力动态Schema = z.record(z.string().describe('势力名'), 国际势力Schema);
@@ -418,13 +447,16 @@ const 社会群体Schema = z.object({
   反CSAT情绪: z.coerce.number().transform(v => _.clamp(v, 0, 100)),
   反美情绪: z.coerce.number().transform(v => _.clamp(v, 0, 100)),
   核心关切: z.string().describe('该群体当前最关心的问题'),
-  政治活跃度: z.coerce.number().transform(v => _.clamp(v, 0, 100)),
-  动向: z.string().describe('该群体当前的特殊变化趋势'),
+  政治活跃度: z.coerce
+    .number()
+    .transform(v => _.clamp(v, 0, 100))
+    .describe('政治活跃度，0-100'),
+  动向: z.string().describe('该群体正在发生的变化趋势'),
 });
 
 export const 舆论场Schema = z.object({
-  社交媒体热点: z.array(z.string().describe('当前热门话题')),
-  互联网直选风向: z.string().describe('当前网民整体情绪倾向'),
+  社交媒体热点: z.array(z.string().describe('当前热门话题标签')),
+  互联网直选风向: z.string().describe('当前网民整体情绪基调'),
   主流媒体立场: z.enum(主流媒体立场列表),
   社会群体: z.record(z.string().describe('群体名'), 社会群体Schema),
 });
@@ -437,10 +469,10 @@ const 角色情况Schema = z.object({
   姓名: z.string(),
   年龄: z.coerce.number(),
   所属团体: z.string().describe('所属的乐队/组织/机构'),
-  身份: z.string().describe('如「羽丘高一学生」「外务大臣」「Live House老板」'),
+  身份: z.string().describe('角色身份'),
 
   政治卷入度: z.enum(政治卷入度列表),
-  担任公职: z.string().describe('如「无」「外务大臣」「农林水产大臣」'),
+  担任公职: z.string().describe('担任的公职'),
   卷入原因: z.string().describe('她是怎么被卷进来的'),
 
   所在地点: z.string(),
@@ -448,7 +480,7 @@ const 角色情况Schema = z.object({
   近期事务: z.string().describe('接下来要处理的事'),
 
   心理状态: z.string(),
-  更关心的事: z.string().describe('她真正在意的——往往不是政治'),
+  更关心的事: z.string().describe('她真正在意的'),
 
   经济状况: z.enum(经济状况列表),
   经济压力描述: z.string(),
@@ -458,8 +490,8 @@ const 角色情况Schema = z.object({
   安保情况: z.string(),
 
   关系动态: z.string().describe('与其他角色的关键互动变化'),
-  所属团体动态: z.string().describe('她所在团体/家庭/店铺的整体状态变化'),
-  个人剧情线: z.string().describe('该角色当前的故事弧线标签'),
+  所属团体动态: z.string().describe('她所在团体/家庭的整体状态变化'),
+  个人剧情线: z.string().describe('当前的故事弧线标签'),
 });
 
 export const 各角色情况Schema = z.record(z.string().describe('角色姓名'), 角色情况Schema);
