@@ -1,0 +1,980 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "世界": {
+      "type": "object",
+      "properties": {
+        "当前日期": {
+          "type": "string",
+          "description": "格式 YYYY-MM-DD，初始 1905-05-10"
+        },
+        "当前时间": {
+          "type": "string",
+          "description": "格式 HH:MM"
+        },
+        "政治阶段": {
+          "type": "string",
+          "description": "当前政治阶段，常见取值：穿越初混乱期/临时领导小组期/政治局常委会执政期/军管期/分裂动荡期/崩溃期，可按剧情扩展"
+        },
+        "当前大事件": {
+          "type": "string",
+          "description": "一句话概括最紧迫事件"
+        }
+      },
+      "required": [
+        "当前日期",
+        "当前时间",
+        "政治阶段",
+        "当前大事件"
+      ]
+    },
+    "基地车": {
+      "type": "object",
+      "properties": {
+        "当前位置": {
+          "type": "string"
+        },
+        "移动状态": {
+          "type": "string",
+          "description": "移动状态，常见取值：驻扎/低速行军/故障停驶，可按剧情扩展"
+        },
+        "反应堆功率等级": {
+          "type": "string",
+          "description": "反应堆功率档位，常见取值：满功率/降功率行军/低功率维持，可按剧情扩展"
+        },
+        "配电系统负载": {
+          "description": "0=空载，100=过载",
+          "$ref": "#/$defs/__schema0"
+        },
+        "反应堆状态": {
+          "type": "string",
+          "description": "反应堆运行状态，常见取值：正常/降功率/故障/危急，可按剧情扩展"
+        },
+        "配电系统状态": {
+          "type": "string",
+          "description": "配电系统状态，常见取值：正常/紧张/过载限流/故障，可按剧情扩展"
+        },
+        "物资储备": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "description": "物资名，可按剧情自由扩展"
+          },
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "储备水平": {
+                "type": "string",
+                "description": "储备水平，常见取值：充足/充足但消耗中/紧张/危急/耗尽/完好/部分损失/污染风险/已损失，可按剧情扩展"
+              },
+              "备注": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "储备水平",
+              "备注"
+            ]
+          }
+        },
+        "核心设备状态": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "description": "核心设备名，如 聚变堆/服务器/数控母机/图形工作站"
+          },
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "状态": {
+                "type": "string",
+                "description": "设备状态，常见取值：正常/降级/故障/损毁，可按剧情扩展"
+              },
+              "备注": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "状态",
+              "备注"
+            ]
+          }
+        },
+        "外骨骼现状": {
+          "type": "string",
+          "description": "外骨骼数量和状态，如 \"10具可用，磁体/电芯不可补货\"；初期 10 具"
+        }
+      },
+      "required": [
+        "当前位置",
+        "移动状态",
+        "反应堆功率等级",
+        "配电系统负载",
+        "反应堆状态",
+        "配电系统状态",
+        "物资储备",
+        "核心设备状态",
+        "外骨骼现状"
+      ]
+    },
+    "科技树": {
+      "type": "object",
+      "properties": {
+        "主要研究槽": {
+          "description": "主要研究方向槽，最多 8 个（初期 1 个，每完成一个整合型节点 +1）",
+          "$ref": "#/$defs/__schema1"
+        },
+        "次要研究槽": {
+          "description": "次要研究方向槽，最多 21 个（初期 3 个，每完成一个系统性基础节点 +1）",
+          "$ref": "#/$defs/__schema4"
+        },
+        "科技发展方针": {
+          "type": "string"
+        },
+        "技术保密等级": {
+          "type": "string",
+          "description": "整体技术保密策略，常见取值：严格保密/选择性开放/逐步扩散"
+        },
+        "科技自主度": {
+          "type": "string",
+          "description": "由兜底脚本自动计算，常见取值：完全依赖/重度依赖/部分自主/基本自主/完全自主"
+        },
+        "已解锁能力清单": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/__schema5"
+          },
+          "description": "已完成节点解锁的能力清单，由脚本在节点完成时自动 insert；AI 只读"
+        }
+      },
+      "required": [
+        "主要研究槽",
+        "次要研究槽",
+        "科技发展方针",
+        "技术保密等级",
+        "科技自主度",
+        "已解锁能力清单"
+      ]
+    },
+    "组织结构": {
+      "type": "object",
+      "properties": {
+        "当前体制": {
+          "type": "string",
+          "description": "当前政权组织形式，可按剧情自由演变"
+        },
+        "当前最高权力机构": {
+          "type": "string",
+          "description": "机构表中当前实际掌权的顶层机构键名"
+        },
+        "机构": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "description": "机构名"
+          },
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "类型": {
+                "type": "string",
+                "description": "机构性质，如 决策核心/军事指挥/行政管理/情报机构/临时委员会"
+              },
+              "一把手": {
+                "type": "string",
+                "description": "该机构主官姓名。空缺时填 空缺"
+              },
+              "二把手": {
+                "type": "string",
+                "description": "副手姓名。无则填 无"
+              },
+              "副职": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "成员": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "权势指数": {
+                "description": "0=虚设，100=绝对核心",
+                "$ref": "#/$defs/__schema6"
+              },
+              "运作状态": {
+                "type": "string",
+                "description": "机构运作状态，常见取值：组建中/正常/紧张/半瘫痪/瘫痪/空缺待补/改组中/被接管/秘密运作/已撤销，可按剧情扩展"
+              },
+              "当前任务": {
+                "type": "string"
+              },
+              "实有人数": {
+                "type": "number"
+              },
+              "上级机构": {
+                "type": "string",
+                "description": "指向机构表中的父机构键名；顶层机构填空字符串"
+              },
+              "制度详情": {
+                "description": "机构制度深度建模子对象。建政后按需补；初期可省略。AI 在机构 insert/rename/改组时填写，正常轮次保留原值",
+                "$ref": "#/$defs/__schema7"
+              }
+            },
+            "required": [
+              "类型",
+              "一把手",
+              "二把手",
+              "副职",
+              "成员",
+              "权势指数",
+              "运作状态",
+              "当前任务",
+              "实有人数",
+              "上级机构"
+            ]
+          }
+        },
+        "财政": {
+          "type": "object",
+          "properties": {
+            "货币体系": {
+              "type": "string",
+              "description": "货币单位与金银比价，如 \"银元，1银元≈0.72两库平银≈1.5克黄金\"；1905年金银比价约1:33"
+            },
+            "收入来源": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "description": "收入项"
+              },
+              "additionalProperties": {
+                "type": "number"
+              }
+            },
+            "主要支出": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "description": "支出项"
+              },
+              "additionalProperties": {
+                "type": "number"
+              }
+            },
+            "财政状况": {
+              "type": "string",
+              "description": "财政状态，常见取值：充裕/平衡/紧张/赤字/破产，可按剧情扩展"
+            },
+            "预算审批权": {
+              "description": "建政后按需补；指向实际掌财权的机构，通常=当前决策核心",
+              "$ref": "#/$defs/__schema8"
+            },
+            "审计机构": {
+              "description": "建政后按需补；审计/监察财政的机构名，无则填 无",
+              "$ref": "#/$defs/__schema9"
+            }
+          },
+          "required": [
+            "货币体系",
+            "收入来源",
+            "主要支出",
+            "财政状况"
+          ]
+        },
+        "当前决策核心": {
+          "description": "指向决策机构键名，通常=当前最高权力机构。建政后按需补",
+          "$ref": "#/$defs/__schema10"
+        },
+        "当前执行首脑": {
+          "description": "指向行政执行机构键名，如 边区政府/人民委员会。尚未分立时不填",
+          "$ref": "#/$defs/__schema11"
+        },
+        "当前监督机构": {
+          "description": "指向监察机构键名，如 监察委员会/纪委。尚未建立不填",
+          "$ref": "#/$defs/__schema12"
+        },
+        "行政区划": {
+          "description": "控制区扩大后 AI 自然 insert 新区划；初期不填",
+          "$ref": "#/$defs/__schema13"
+        },
+        "人事": {
+          "description": "建政后按需补；初期干部管理粗放，不填",
+          "$ref": "#/$defs/__schema14"
+        }
+      },
+      "required": [
+        "当前体制",
+        "当前最高权力机构",
+        "机构",
+        "财政"
+      ]
+    },
+    "军事": {
+      "type": "object",
+      "properties": {
+        "总兵力": {
+          "type": "number"
+        },
+        "部队": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "description": "部队名，与机构表中军事指挥机构尽量对应"
+          },
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "兵力": {
+                "type": "number"
+              },
+              "训练水平": {
+                "type": "string",
+                "description": "训练水平，常见取值：未训练/基础训练中/初步形成战斗力/合格/精锐，可按剧情扩展"
+              },
+              "士气": {
+                "type": "string"
+              },
+              "当前位置": {
+                "type": "string"
+              },
+              "当前任务": {
+                "type": "string"
+              },
+              "备注": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "兵力",
+              "训练水平",
+              "士气",
+              "当前位置",
+              "当前任务",
+              "备注"
+            ]
+          }
+        },
+        "武器装备": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "description": "武器名，可按剧情扩展"
+          },
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "数量": {
+                "type": "number"
+              },
+              "来源": {
+                "type": "string"
+              },
+              "状态": {
+                "type": "string",
+                "description": "装备状态，常见取值：完好/部分磨损/严重损耗/报废，可按剧情扩展"
+              },
+              "备注": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "数量",
+              "来源",
+              "状态",
+              "备注"
+            ]
+          }
+        },
+        "现代弹药": {
+          "type": "string",
+          "description": "现代弹药储备与备注，如 \"充足（弹匣装填中）\"/\"紧张（不可复制，仅剩3个基数）\"；常见储备水平：充足/消耗过半/紧张/危急/耗尽，不可逆消耗"
+        }
+      },
+      "required": [
+        "总兵力",
+        "部队",
+        "武器装备",
+        "现代弹药"
+      ]
+    },
+    "情报": {
+      "type": "object",
+      "properties": {
+        "对外情报网络": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "description": "目标势力名，与外部势力键名尽量对应"
+          },
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "情报来源": {
+                "type": "string"
+              },
+              "可靠性": {
+                "type": "string",
+                "description": "可靠性，常见取值：可靠/基本可靠/待验证/不可靠/反间嫌疑，可按剧情扩展"
+              },
+              "覆盖范围": {
+                "type": "string"
+              },
+              "最近情报": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "情报来源",
+              "可靠性",
+              "覆盖范围",
+              "最近情报"
+            ]
+          }
+        },
+        "反间谍": {
+          "type": "string",
+          "description": "反间谍措施与效果，如 \"岗哨盘查+通行证制度，效果一般\"；常见效果：严密/有效/一般/有漏洞/形同虚设"
+        },
+        "情报准确度": {
+          "type": "string",
+          "description": "情报准确度，常见取值：高/中/低/盲区，可按剧情扩展"
+        },
+        "情报盲区": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "对外情报网络",
+        "反间谍",
+        "情报准确度",
+        "情报盲区"
+      ]
+    },
+    "外部势力": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "外部势力名，可按剧情自由扩展"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "对穿越者态度": {
+            "type": "string",
+            "description": "态度，常见取值：未察觉/怀疑/关注/敌对/合作/利用，可按剧情扩展"
+          },
+          "对穿越者了解程度": {
+            "type": "string",
+            "description": "了解程度，常见取值：一无所知/听闻异事/掌握部分情报/深入了解/完全掌握，可按剧情扩展"
+          },
+          "在当地影响力": {
+            "type": "number"
+          },
+          "近期行动": {
+            "type": "string"
+          },
+          "内部矛盾": {
+            "type": "string"
+          },
+          "我方外交策略": {
+            "type": "string",
+            "description": "我方外交方针，常见取值：观望/接触试探/秘密沟通/公开合作/威慑/渗透/拉拢分化/回避，可按剧情扩展"
+          },
+          "外交关系": {
+            "type": "string",
+            "description": "接触与协议状态，如 \"已通过本地商人传话清廷知县，口头约定互不侵犯\"；未接触时填 \"无\""
+          },
+          "内部分支": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "对穿越者态度",
+          "对穿越者了解程度",
+          "在当地影响力",
+          "近期行动",
+          "内部矛盾",
+          "我方外交策略",
+          "外交关系",
+          "内部分支"
+        ]
+      }
+    },
+    "国内情势": {
+      "type": "object",
+      "properties": {
+        "控制区范围": {
+          "type": "string"
+        },
+        "控制区人口": {
+          "type": "number"
+        },
+        "控制区治安": {
+          "type": "string"
+        },
+        "民众态度": {
+          "type": "string",
+          "description": "常见取值：未知/好奇/敬畏/合作/观望/怀疑/敌视，可按剧情扩展"
+        },
+        "周边军事态势": {
+          "type": "string"
+        },
+        "周边政权态度": {
+          "type": "string"
+        },
+        "全国态势": {
+          "type": "string"
+        },
+        "历史大事件进度": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "控制区范围",
+        "控制区人口",
+        "控制区治安",
+        "民众态度",
+        "周边军事态势",
+        "周边政权态度",
+        "全国态势",
+        "历史大事件进度"
+      ]
+    },
+    "群友角色": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "群友姓名"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "姓名": {
+            "type": "string"
+          },
+          "性别": {
+            "type": "string"
+          },
+          "年龄": {
+            "type": "number"
+          },
+          "当前职务": {
+            "type": "string"
+          },
+          "当前位置": {
+            "type": "string"
+          },
+          "当前活动": {
+            "type": "string"
+          },
+          "关系动态": {
+            "type": "string"
+          },
+          "人身安全": {
+            "type": "string",
+            "description": "人身安全，常见取值：安全/受伤/需要医护/危险/失踪/已死亡，已死亡后不可复活"
+          },
+          "履历": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/__schema16"
+            }
+          }
+        },
+        "required": [
+          "姓名",
+          "性别",
+          "年龄",
+          "当前职务",
+          "当前位置",
+          "当前活动",
+          "关系动态",
+          "人身安全",
+          "履历"
+        ]
+      }
+    },
+    "非群友角色": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "非群友角色姓名"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "姓名": {
+            "type": "string"
+          },
+          "性别": {
+            "type": "string"
+          },
+          "年龄": {
+            "type": "number"
+          },
+          "来源": {
+            "type": "string"
+          },
+          "对穿越者态度": {
+            "type": "string"
+          },
+          "当前职务": {
+            "type": "string"
+          },
+          "当前位置": {
+            "type": "string"
+          },
+          "当前活动": {
+            "type": "string"
+          },
+          "人身安全": {
+            "type": "string",
+            "description": "人身安全，常见取值：安全/受伤/需要医护/危险/失踪/已死亡，已死亡后不可复活"
+          },
+          "履历": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/__schema16"
+            }
+          }
+        },
+        "required": [
+          "姓名",
+          "性别",
+          "年龄",
+          "来源",
+          "对穿越者态度",
+          "当前职务",
+          "当前位置",
+          "当前活动",
+          "人身安全",
+          "履历"
+        ]
+      }
+    },
+    "事件队列": {
+      "type": "object",
+      "properties": {
+        "近期已发生事件": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "事件": {
+                "type": "string"
+              },
+              "时间": {
+                "type": "string"
+              },
+              "影响": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "事件",
+              "时间",
+              "影响"
+            ]
+          }
+        },
+        "潜在危机": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "危机": {
+                "type": "string"
+              },
+              "触发条件": {
+                "type": "string"
+              },
+              "严重程度": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "危机",
+              "触发条件",
+              "严重程度"
+            ]
+          }
+        }
+      },
+      "required": [
+        "近期已发生事件",
+        "潜在危机"
+      ]
+    }
+  },
+  "required": [
+    "世界",
+    "基地车",
+    "科技树",
+    "组织结构",
+    "军事",
+    "情报",
+    "外部势力",
+    "国内情势",
+    "群友角色",
+    "非群友角色",
+    "事件队列"
+  ],
+  "$defs": {
+    "__schema0": {
+      "type": "number"
+    },
+    "__schema1": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/__schema2"
+      }
+    },
+    "__schema2": {
+      "type": "object",
+      "properties": {
+        "节点名": {
+          "type": "string",
+          "description": "tech_tree.ts 中定义的科技节点名"
+        },
+        "研发进度": {
+          "description": "0-100，AI 根据剧情判断填写；100=完成（由脚本检测并解锁能力）",
+          "$ref": "#/$defs/__schema3"
+        },
+        "启动日期": {
+          "type": "string",
+          "description": "YYYY-MM-DD；空字符串=尚未启动"
+        }
+      },
+      "required": [
+        "节点名",
+        "研发进度",
+        "启动日期"
+      ]
+    },
+    "__schema3": {
+      "type": "number"
+    },
+    "__schema4": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/__schema2"
+      }
+    },
+    "__schema5": {
+      "type": "string"
+    },
+    "__schema6": {
+      "type": "number"
+    },
+    "__schema7": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "所属体系": {
+              "type": "string",
+              "description": "党/政/军/群团/企事业，常见取值：党/政/军/群团/企事业；党体系设书记+副书记+常委，政体系设行政首长+党组书记，军体系保留双首长"
+            },
+            "机构性质": {
+              "type": "string",
+              "description": "常设机构/议事协调机构/临时机构/派出机构，常见取值：常设机构/议事协调机构/临时机构/派出机构；议事协调机构须填依托部门"
+            },
+            "级别": {
+              "type": "string",
+              "description": "机构层级，常见取值：最高决策/中枢军事/中枢行政/中枢办公/下属部门/基层单位/临时机构/司法监察/地方政权/国营企业/野战部队/民兵/秘密机构/意识形态机构，可按剧情扩展"
+            },
+            "职务体系": {
+              "type": "string",
+              "description": "一把手称呼体系，如 总书记-常委/主席-副主席/主任-副主任/连长-排长"
+            },
+            "领导体制": {
+              "type": "string",
+              "description": "条块关系，常见取值：垂直管理/属地管理/双重领导/业务指导；双重领导=既受条条业务领导又受块块属地领导"
+            },
+            "上级业务主管": {
+              "type": "string",
+              "description": "条条上的业务主管机构名；无则填 无"
+            },
+            "决策规则": {
+              "type": "string",
+              "description": "决策与议事方式，常见取值：常委会集体决策/一把手拍板/扩大会议议决/请示上级 / 民主集中制/首长负责制/委员分工负责，可按剧情扩展"
+            },
+            "任命权限": {
+              "type": "string",
+              "description": "该机构负责人的任命主体，如 政治局常委会任命/军委任命"
+            },
+            "职级": {
+              "type": "string",
+              "description": "主官职级，常见取值：正国级/副国级/正部级/副部级/正厅级/副厅级/正处级/副处级/正科级/副科级/科员，可按剧情扩展"
+            },
+            "议事协调备注": {
+              "type": "string",
+              "description": "议事协调机构专用：办事机构设在哪个常设部门 / 组长级别；常设机构填 无"
+            },
+            "请示报告要求": {
+              "type": "string",
+              "description": "该机构需向谁请示/报告哪些事项，如 重大行动须请示政治局常委会，每周报告工作"
+            },
+            "保密等级": {
+              "type": "string",
+              "description": "公开/内部/秘密/机密/绝密，常见取值：公开/内部/秘密/机密/绝密；基地车相关机构通常为机密或绝密"
+            }
+          },
+          "required": [
+            "所属体系",
+            "机构性质",
+            "级别",
+            "职务体系",
+            "领导体制",
+            "上级业务主管",
+            "决策规则",
+            "任命权限",
+            "职级",
+            "议事协调备注",
+            "请示报告要求",
+            "保密等级"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "__schema8": {
+      "type": "string"
+    },
+    "__schema9": {
+      "type": "string"
+    },
+    "__schema10": {
+      "type": "string"
+    },
+    "__schema11": {
+      "type": "string"
+    },
+    "__schema12": {
+      "type": "string"
+    },
+    "__schema13": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "description": "区划名，如 当涂县/某乡/某村"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "层级": {
+            "type": "string",
+            "description": "据点/村级/乡级/县级/地级/省级，常见取值：据点/村级/乡级/县级/地级/省级，可按剧情扩展"
+          },
+          "治理机构": {
+            "type": "string",
+            "description": "指向机构 record 中的键名"
+          },
+          "人口": {
+            "type": "number"
+          },
+          "治安状况": {
+            "type": "string",
+            "description": "稳固/稳定/紧张/动荡/失控"
+          },
+          "与中央关系": {
+            "type": "string",
+            "description": "常见取值：服从/观望/阳奉阴违/对抗，可按剧情扩展"
+          },
+          "备注": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "层级",
+          "治理机构",
+          "人口",
+          "治安状况",
+          "与中央关系",
+          "备注"
+        ]
+      }
+    },
+    "__schema14": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "干部管理原则": {
+              "type": "string",
+              "description": "如 党管干部/军委任命"
+            },
+            "职级体系": {
+              "type": "string",
+              "description": "当前政权采用的职级体系描述"
+            },
+            "关键岗位任命记录": {
+              "description": "近期关键岗位任命记录，保留最近 10 条",
+              "$ref": "#/$defs/__schema15"
+            }
+          },
+          "required": [
+            "干部管理原则",
+            "职级体系",
+            "关键岗位任命记录"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "__schema15": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "岗位": {
+            "type": "string"
+          },
+          "任命人": {
+            "type": "string"
+          },
+          "任命主体": {
+            "type": "string"
+          },
+          "任命时间": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "岗位",
+          "任命人",
+          "任命主体",
+          "任命时间"
+        ]
+      }
+    },
+    "__schema16": {
+      "type": "object",
+      "properties": {
+        "时间": {
+          "type": "string"
+        },
+        "事件": {
+          "type": "string"
+        },
+        "来源": {
+          "type": "string",
+          "description": "AI / 兜底脚本 / GM"
+        }
+      },
+      "required": [
+        "时间",
+        "事件",
+        "来源"
+      ]
+    }
+  }
+}

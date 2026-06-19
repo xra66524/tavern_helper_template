@@ -3,6 +3,7 @@
 // 主Schema定义：7个顶层模块 + 13个子Schema，约120个字段
 // ============================================================
 
+// @ts-expect-error Node ESM schema dump 需要显式 .ts 扩展名，webpack 可正常解析
 import {
   CSDC接受度列表,
   LiveHouse运营状态列表,
@@ -84,8 +85,9 @@ import {
   通胀等级列表,
   预算影响列表,
   首相状态列表,
-} from './constants';
-import { deriveAll } from './transforms';
+} from './constants.ts';
+// @ts-expect-error Node ESM schema dump 需要显式 .ts 扩展名，webpack 可正常解析
+import { deriveAll } from './transforms.ts';
 
 // ============================================================
 // 一、世界模块（时间轴 + 阶段标记）

@@ -49,5 +49,8 @@
   "[vue]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "yaml.schemas": {
+    "https://testingcf.jsdelivr.net/gh/StageDog/tavern_sync/dist/schema/character.zh.json": "file:///d%3A/tavern_helper_template/%E7%BE%A4%E5%8F%8B%E7%BE%A4%E7%A9%BF/%E7%BE%A4%E5%8F%8B%E7%BE%A4%E7%A9%BF.yaml"
+  }
 }

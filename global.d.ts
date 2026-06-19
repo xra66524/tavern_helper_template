@@ -42,3 +42,5 @@ declare module 'https://testingcf.jsdelivr.net/gh/StageDog/tavern_resource/dist/
     schema: z.ZodType<Record<string, any>> | (() => z.ZodType<Record<string, any>>),
   ): void;
 }
+
+declare module 'https://testingcf.jsdelivr.net/gh/MagicalAstrogy/MagVarUpdate/artifact/bundle.js' {}
