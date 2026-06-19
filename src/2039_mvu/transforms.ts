@@ -13,6 +13,8 @@ interface RuntimeMvuData extends Record<string, any> {
     政治阶段?: string;
     选举模式?: string;
     当前大事件?: string;
+    省厅面板配置?: Record<string, any>;
+    [key: string]: any;
   };
   日本执政?: {
     首相状态?: string;
@@ -44,7 +46,30 @@ interface RuntimeMvuData extends Record<string, any> {
       合法性?: string;
       [key: string]: any;
     };
-    各省厅?: Record<string, { 内阁掌控度?: number; [key: string]: any }>;
+    各省厅?: Record<
+      string,
+      {
+        内阁掌控度?: number;
+        事务次官会议掌控度?: number;
+        大臣?: string;
+        副大臣?: {
+          姓名?: string;
+          人身安全状况?: string;
+          暗杀威胁等级?: string;
+          对阁僚态度?: string;
+          对官僚态度?: string;
+          [key: string]: any;
+        };
+        事务次官?: {
+          姓名?: string;
+          对阁僚态度?: string;
+          实权程度?: string;
+          出身派系?: string;
+          [key: string]: any;
+        };
+        [key: string]: any;
+      }
+    >;
     当前政策?: Record<string, any>;
     主要政治势力?: Record<string, any>;
   };
@@ -281,6 +306,96 @@ export function derive外部压力指数(data: RuntimeMvuData): '低' | '中' | 
   return '低';
 }
 
+// ─── $官僚控制指数 ──────────────────────────────────────────
+
+/** 由 各省厅事务次官的实权程度 + 对阁僚态度 + 事务次官会议掌控度 综合推导 */
+export function derive官僚控制指数(
+  data: RuntimeMvuData,
+): '内阁主导' | '分权制衡' | '官僚优势' | '官僚主导' | '官僚专政' {
+  const 各省厅 = data.日本执政?.各省厅 ?? {};
+  const 事务次官会议权力 = data.日本执政?.事务次官会议?.实际权力等级;
+
+  let score = 0;
+  let count = 0;
+
+  for (const 省厅 of Object.values(各省厅)) {
+    const 事务次官 = 省厅.事务次官;
+    if (!事务次官?.姓名) continue;
+    count++;
+
+    // 事务次官实权程度计分
+    switch (事务次官.实权程度) {
+      case '超越省厅影响力':
+        score += 5;
+        break;
+      case '完全掌控省厅':
+        score += 4;
+        break;
+      case '政策制定主导':
+        score += 3;
+        break;
+      case '日常运作主导':
+        score += 2;
+        break;
+      case '名义管理':
+        score += 0;
+        break;
+    }
+
+    // 事务次官对阁僚态度计分
+    switch (事务次官.对阁僚态度) {
+      case '暗中操控':
+        score += 3;
+        break;
+      case '架空阁僚':
+        score += 3;
+        break;
+      case '公开对抗':
+        score += 2;
+        break;
+      case '消极抵抗':
+        score += 1;
+        break;
+      case '表面服从':
+        score += 0;
+        break;
+      case '主动配合':
+        score -= 2;
+        break;
+    }
+
+    // 事务次官会议掌控度加成
+    score += (省厅.事务次官会议掌控度 ?? 50) / 25;
+    score -= (省厅.内阁掌控度 ?? 50) / 25;
+  }
+
+  // 事务次官会议权力等级加成
+  switch (事务次官会议权力) {
+    case '完全替代内阁':
+      score += 5;
+      break;
+    case '主导政府运作':
+      score += 3;
+      break;
+    case '与内阁分权':
+      score += 1;
+      break;
+    case '名义顾问':
+      score -= 2;
+      break;
+  }
+
+  // 归一化
+  if (count === 0) return '分权制衡';
+  const avg = score / count;
+
+  if (avg >= 5) return '官僚专政';
+  if (avg >= 3) return '官僚主导';
+  if (avg >= 1) return '官僚优势';
+  if (avg >= -1) return '分权制衡';
+  return '内阁主导';
+}
+
 // ============================================================
 // 组合 transform：一次性生成所有派生字段
 // ============================================================
@@ -294,5 +409,11 @@ export function deriveAll<T extends RuntimeMvuData>(data: T) {
     $整体危机等级: derive整体危机等级(data),
     $当前剧情焦点: derive当前剧情焦点(data),
     $外部压力指数: derive外部压力指数(data),
+    $官僚控制指数: derive官僚控制指数(data),
+    // 省厅面板配置不存在时保留空对象（组件中通过 use省厅面板配置 composable 降级为 TS 默认值）
+    世界: {
+      ...data.世界,
+      省厅面板配置: data.世界?.省厅面板配置 ?? {},
+    },
   };
 }

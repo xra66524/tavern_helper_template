@@ -2362,6 +2362,19 @@
         仅格式提示词: false
 
   酒馆助手:
-    脚本库: []
+    脚本库:
+      - 名称: mvu
+        id: 22d70d1f-d0be-4061-911e-d0c57ab55053
+        启用: true
+        类型: 脚本
+        内容: |-
+          import 'https://testingcf.jsdelivr.net/gh/MagicalAstrogy/MagVarUpdate/artifact/bundle.js';
+
+      - 名称: 变量结构_2039
+        id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        启用: true
+        类型: 脚本
+        内容: |-
+          import 'http://localhost:5500/dist/2039_mvu/index.js'';
 
     变量: {}

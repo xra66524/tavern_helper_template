@@ -18,16 +18,16 @@
 
       <Transition name="slide-fade">
         <div v-show="expanded" class="tab-content">
-          <div v-if="currentTab === 'cabinet'" class="placeholder placeholder-cabinet">
-            <div class="placeholder-icon">🏛️</div>
-            <div class="placeholder-title">内阁面板</div>
-            <div class="placeholder-desc">阁僚双线追踪、官僚操控、少女视角将在这里展开。</div>
-          </div>
-          <div v-else-if="currentTab === 'ministry'" class="placeholder placeholder-ministry">
-            <div class="placeholder-icon">🏢</div>
-            <div class="placeholder-title">省厅面板</div>
-            <div class="placeholder-desc">各省厅运行状态、主导政策与势力博弈将在这里展示。</div>
-          </div>
+          <CabinetPanel
+            v-if="currentTab === 'cabinet'"
+            @navigate="navigateTab"
+            @navigate-to-ministry="navigateToMinistry"
+          />
+          <MinistryPanel
+            v-else-if="currentTab === 'ministry'"
+            @navigate="navigateTab"
+            @navigate-to-minister="navigateToMinister"
+          />
           <div v-else-if="currentTab === 'livelihood'" class="placeholder placeholder-livelihood">
             <div class="placeholder-icon">🏘️</div>
             <div class="placeholder-title">民生面板</div>
@@ -66,7 +66,9 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import CabinetPanel from './内阁面板.vue';
 import StatusBar from './状态栏.vue';
+import MinistryPanel from './省厅面板.vue';
 
 const tabs = [
   { key: 'cabinet', label: '内阁', icon: '🏛️' },
@@ -99,6 +101,21 @@ const toggleStatusBar = () => {
   if (expanded.value) {
     expanded.value = false;
   }
+};
+
+const navigateTab = (tab: 'policy' | 'characters') => {
+  currentTab.value = tab;
+  expanded.value = true;
+};
+
+const navigateToMinister = (position: string) => {
+  currentTab.value = 'cabinet';
+  expanded.value = true;
+};
+
+const navigateToMinistry = (ministryName: string) => {
+  currentTab.value = 'ministry';
+  expanded.value = true;
 };
 </script>
 
