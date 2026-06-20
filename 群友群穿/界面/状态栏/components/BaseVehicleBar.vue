@@ -1,5 +1,12 @@
 <template>
-  <section class="vehicle-bar" aria-label="基地车状态条">
+  <section
+    class="vehicle-bar"
+    role="button"
+    tabindex="0"
+    aria-label="基地车状态条，点击查看详情"
+    @click="emit('click')"
+    @keydown.enter="emit('click')"
+  >
     <div class="vehicle-main">
       <span class="vehicle-title">🚛 基地车</span>
       <span class="vehicle-location">{{ vehicle.当前位置 || '未知位置' }}</span>
@@ -8,14 +15,17 @@
     <div class="vehicle-tags">
       <span class="tag" :style="tagStyle(vehicle.反应堆状态)">⚛️ {{ vehicle.反应堆状态 || '--' }}</span>
       <span class="tag" :style="loadStyle">⚡ 负载 {{ vehicle.配电系统负载 ?? '--' }}%</span>
-      <span class="tag">🦾 外骨骼 {{ vehicle.外骨骼现状 ?? '--' }}</span>
+      <span class="tag">🦾 {{ vehicle.外骨骼现状 ?? '--' }}</span>
     </div>
+    <span class="vehicle-hint" aria-hidden="true">详情 ›</span>
   </section>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useDataStore } from '../store';
+
+const emit = defineEmits<{ click: [] }>();
 
 const store = useDataStore();
 const vehicle = computed(() => store.data.基地车);
@@ -42,6 +52,7 @@ const loadStyle = computed(() => {
 
 <style lang="scss" scoped>
 .vehicle-bar {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -51,6 +62,14 @@ const loadStyle = computed(() => {
   border-bottom: 1px solid var(--qyc-line);
   padding: 10px 12px;
   background: var(--qyc-paper-dark);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.vehicle-bar:hover,
+.vehicle-bar:focus-visible {
+  background: var(--qyc-paper-warm);
+  outline: none;
 }
 
 .vehicle-main,
@@ -80,5 +99,12 @@ const loadStyle = computed(() => {
   font-size: 13px;
   padding: 4px 9px;
   background: var(--qyc-paper-light);
+}
+
+.vehicle-hint {
+  color: var(--qyc-vermilion-faded);
+  font-family: var(--qyc-font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
 }
 </style>

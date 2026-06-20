@@ -2,7 +2,8 @@
   <div class="status-panel">
     <article class="dossier-shell">
       <WorldSection />
-      <BaseVehicleBar />
+      <BaseVehicleBar @click="showVehicleDetail = true" />
+      <BaseVehicleDetailModal v-if="showVehicleDetail" @close="showVehicleDetail = false" />
 
       <section class="dossier-body" aria-live="polite">
         <header class="section-header">
@@ -13,18 +14,29 @@
           </div>
         </header>
 
-        <div class="summary-card">
+        <div v-if="!hasRealPanel" class="summary-card">
           <span class="summary-label">本页摘要</span>
           <p>{{ placeholderText }}</p>
         </div>
 
-        <div class="paper-card">
+        <div v-if="!hasRealPanel" class="paper-card">
           <div class="paper-line"></div>
           <p class="paper-title">{{ activeTabMeta?.label ?? activeTab }}案卷</p>
           <p class="paper-text">
             后续阶段会在此处接入对应详情组件。当前布局已改为手机优先的案卷正文区：顶部是世界与基地车简报，底部是固定菜单，正文只展示当前案卷。
           </p>
         </div>
+
+        <TechTreePanel v-if="activeTab === '科技'" />
+        <OrganizationTree v-else-if="activeTab === '组织'" />
+        <MilitaryPanel v-else-if="activeTab === '军事'" />
+        <CharacterGrid v-else-if="activeTab === '角色'" />
+        <ExternalForcesPanel v-else-if="activeTab === '外部'" />
+        <IntelligencePanel v-else-if="activeTab === '情报'" />
+        <EventQueue v-else-if="activeTab === '事件'" />
+        <FinancePanel v-else-if="activeTab === '财政'" />
+        <AdminDivisionPanel v-else-if="activeTab === '区划'" />
+        <PersonnelPanel v-else-if="activeTab === '人事'" />
       </section>
 
       <TabNav v-model="activeTab" :tabs="visibleTabs" />
@@ -34,13 +46,23 @@
 
 <script setup lang="ts">
 import { useLocalStorage } from '@vueuse/core';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+import AdminDivisionPanel from './components/AdminDivisionPanel.vue';
 import BaseVehicleBar from './components/BaseVehicleBar.vue';
+import BaseVehicleDetailModal from './components/BaseVehicleDetailModal.vue';
+import CharacterGrid from './components/CharacterGrid.vue';
+import EventQueue from './components/EventQueue.vue';
+import ExternalForcesPanel from './components/ExternalForcesPanel.vue';
+import FinancePanel from './components/FinancePanel.vue';
+import IntelligencePanel from './components/IntelligencePanel.vue';
+import MilitaryPanel from './components/MilitaryPanel.vue';
+import OrganizationTree from './components/OrganizationTree.vue';
+import PersonnelPanel from './components/PersonnelPanel.vue';
 import TabNav from './components/TabNav.vue';
+import TechTreePanel from './components/TechTreePanel.vue';
 import WorldSection from './components/WorldSection.vue';
-import { useDataStore } from './store';
 
-const store = useDataStore();
+const showVehicleDetail = ref(false);
 
 type TabItem = {
   id: string;
@@ -58,15 +80,13 @@ const coreTabs: TabItem[] = [
   { id: '事件', label: '事件', icon: '⚠️' },
 ];
 
-const optionalTabs = computed<TabItem[]>(() => {
-  const tabs: TabItem[] = [];
-  if (_.has(store.data, '组织结构.财政')) tabs.push({ id: '财政', label: '财政', icon: '💰' });
-  if (_.has(store.data, '组织结构.行政区划')) tabs.push({ id: '区划', label: '区划', icon: '🗺️' });
-  if (_.has(store.data, '组织结构.人事')) tabs.push({ id: '人事', label: '人事', icon: '📋' });
-  return tabs;
-});
+const optionalTabs: TabItem[] = [
+  { id: '财政', label: '财政', icon: '💰' },
+  { id: '区划', label: '区划', icon: '🗺️' },
+  { id: '人事', label: '人事', icon: '📋' },
+];
 
-const visibleTabs = computed(() => [...coreTabs, ...optionalTabs.value]);
+const visibleTabs = computed(() => [...coreTabs, ...optionalTabs]);
 const activeTab = useLocalStorage<string>('群友群穿:status_bar:active_tab', '科技');
 const activeTabMeta = computed(() => visibleTabs.value.find(tab => tab.id === activeTab.value));
 const sectionKicker = computed(
@@ -74,6 +94,10 @@ const sectionKicker = computed(
     `案卷 ${Math.max(1, visibleTabs.value.findIndex(tab => tab.id === activeTab.value) + 1)} / ${visibleTabs.value.length}`,
 );
 const placeholderText = computed(() => `${activeTab.value}面板将在后续阶段继续施工。当前阶段 5.1 仅搭建可加载框架。`);
+
+/** 已完工的真实面板列表，不再显示占位符 */
+const realPanels = new Set(['科技', '组织', '军事', '角色', '外部', '情报', '事件', '财政', '区划', '人事']);
+const hasRealPanel = computed(() => realPanels.has(activeTab.value));
 </script>
 
 <style lang="scss" scoped>

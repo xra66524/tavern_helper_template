@@ -20,6 +20,10 @@
         "当前大事件": {
           "type": "string",
           "description": "一句话概括最紧迫事件"
+        },
+        "当前会议": {
+          "description": "当前正在召开或即将召开的会议，常见取值：常委会会议/政治局会议/常务会议/部务会议/党组会议/民主生活会/扩大会议/领导小组会议/无。无会议时填 \"无\"；初期不填",
+          "$ref": "#/$defs/__schema0"
         }
       },
       "required": [
@@ -45,7 +49,7 @@
         },
         "配电系统负载": {
           "description": "0=空载，100=过载",
-          "$ref": "#/$defs/__schema0"
+          "$ref": "#/$defs/__schema1"
         },
         "反应堆状态": {
           "type": "string",
@@ -123,11 +127,11 @@
       "properties": {
         "主要研究槽": {
           "description": "主要研究方向槽，最多 8 个（初期 1 个，每完成一个整合型节点 +1）",
-          "$ref": "#/$defs/__schema1"
+          "$ref": "#/$defs/__schema2"
         },
         "次要研究槽": {
           "description": "次要研究方向槽，最多 21 个（初期 3 个，每完成一个系统性基础节点 +1）",
-          "$ref": "#/$defs/__schema4"
+          "$ref": "#/$defs/__schema5"
         },
         "科技发展方针": {
           "type": "string"
@@ -143,7 +147,7 @@
         "已解锁能力清单": {
           "type": "array",
           "items": {
-            "$ref": "#/$defs/__schema5"
+            "$ref": "#/$defs/__schema6"
           },
           "description": "已完成节点解锁的能力清单，由脚本在节点完成时自动 insert；AI 只读"
         }
@@ -203,7 +207,7 @@
               },
               "权势指数": {
                 "description": "0=虚设，100=绝对核心",
-                "$ref": "#/$defs/__schema6"
+                "$ref": "#/$defs/__schema7"
               },
               "运作状态": {
                 "type": "string",
@@ -221,7 +225,7 @@
               },
               "制度详情": {
                 "description": "机构制度深度建模子对象。建政后按需补；初期可省略。AI 在机构 insert/rename/改组时填写，正常轮次保留原值",
-                "$ref": "#/$defs/__schema7"
+                "$ref": "#/$defs/__schema8"
               }
             },
             "required": [
@@ -271,11 +275,11 @@
             },
             "预算审批权": {
               "description": "建政后按需补；指向实际掌财权的机构，通常=当前决策核心",
-              "$ref": "#/$defs/__schema8"
+              "$ref": "#/$defs/__schema9"
             },
             "审计机构": {
               "description": "建政后按需补；审计/监察财政的机构名，无则填 无",
-              "$ref": "#/$defs/__schema9"
+              "$ref": "#/$defs/__schema10"
             }
           },
           "required": [
@@ -287,23 +291,23 @@
         },
         "当前决策核心": {
           "description": "指向决策机构键名，通常=当前最高权力机构。建政后按需补",
-          "$ref": "#/$defs/__schema10"
+          "$ref": "#/$defs/__schema11"
         },
         "当前执行首脑": {
           "description": "指向行政执行机构键名，如 边区政府/人民委员会。尚未分立时不填",
-          "$ref": "#/$defs/__schema11"
+          "$ref": "#/$defs/__schema12"
         },
         "当前监督机构": {
           "description": "指向监察机构键名，如 监察委员会/纪委。尚未建立不填",
-          "$ref": "#/$defs/__schema12"
+          "$ref": "#/$defs/__schema13"
         },
         "行政区划": {
           "description": "控制区扩大后 AI 自然 insert 新区划；初期不填",
-          "$ref": "#/$defs/__schema13"
+          "$ref": "#/$defs/__schema14"
         },
         "人事": {
           "description": "建政后按需补；初期干部管理粗放，不填",
-          "$ref": "#/$defs/__schema14"
+          "$ref": "#/$defs/__schema15"
         }
       },
       "required": [
@@ -581,7 +585,7 @@
           "履历": {
             "type": "array",
             "items": {
-              "$ref": "#/$defs/__schema16"
+              "$ref": "#/$defs/__schema17"
             }
           }
         },
@@ -638,7 +642,7 @@
           "履历": {
             "type": "array",
             "items": {
-              "$ref": "#/$defs/__schema16"
+              "$ref": "#/$defs/__schema17"
             }
           }
         },
@@ -725,15 +729,18 @@
   ],
   "$defs": {
     "__schema0": {
-      "type": "number"
+      "type": "string"
     },
     "__schema1": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/__schema2"
-      }
+      "type": "number"
     },
     "__schema2": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/__schema3"
+      }
+    },
+    "__schema3": {
       "type": "object",
       "properties": {
         "节点名": {
@@ -742,7 +749,7 @@
         },
         "研发进度": {
           "description": "0-100，AI 根据剧情判断填写；100=完成（由脚本检测并解锁能力）",
-          "$ref": "#/$defs/__schema3"
+          "$ref": "#/$defs/__schema4"
         },
         "启动日期": {
           "type": "string",
@@ -755,22 +762,22 @@
         "启动日期"
       ]
     },
-    "__schema3": {
-      "type": "number"
-    },
     "__schema4": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/__schema2"
-      }
+      "type": "number"
     },
     "__schema5": {
-      "type": "string"
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/__schema3"
+      }
     },
     "__schema6": {
-      "type": "number"
+      "type": "string"
     },
     "__schema7": {
+      "type": "number"
+    },
+    "__schema8": {
       "anyOf": [
         {
           "type": "object",
@@ -844,9 +851,6 @@
         }
       ]
     },
-    "__schema8": {
-      "type": "string"
-    },
     "__schema9": {
       "type": "string"
     },
@@ -860,6 +864,9 @@
       "type": "string"
     },
     "__schema13": {
+      "type": "string"
+    },
+    "__schema14": {
       "type": "object",
       "propertyNames": {
         "type": "string",
@@ -901,7 +908,7 @@
         ]
       }
     },
-    "__schema14": {
+    "__schema15": {
       "anyOf": [
         {
           "type": "object",
@@ -916,7 +923,7 @@
             },
             "关键岗位任命记录": {
               "description": "近期关键岗位任命记录，保留最近 10 条",
-              "$ref": "#/$defs/__schema15"
+              "$ref": "#/$defs/__schema16"
             }
           },
           "required": [
@@ -930,7 +937,7 @@
         }
       ]
     },
-    "__schema15": {
+    "__schema16": {
       "type": "array",
       "items": {
         "type": "object",
@@ -956,7 +963,7 @@
         ]
       }
     },
-    "__schema16": {
+    "__schema17": {
       "type": "object",
       "properties": {
         "时间": {
