@@ -1,0 +1,182 @@
+<div style="max-width: 800px; margin: 15px auto; font-family: 'Times New Roman', '仿宋', serif; background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); border-radius: 18px; box-shadow: 0 8px 32px 0 rgba(142, 148, 155, 0.37); padding: 25px; border: 1px solid rgba(255, 255, 255, 0.18); box-sizing: border-box;">
+
+<!-- 综合信息 -->
+<div style="margin-bottom: 20px; padding: 12px 18px; background: rgba(70, 130, 180, 0.1); border-radius: 10px; color: #34495e; text-shadow: 1px 1px 2px rgba(255,255,255,0.7); box-sizing: border-box;">
+        <p style="margin: 2px 0; text-align: left; font-size: 15px;">📅 $1</p>
+        <p style="margin: 2px 0; text-align: left; font-size: 15px;">     $2</p>
+        <p style="margin: 2px 0; text-align: left; font-size: 15px;">⏰ $3</p>
+        <p style="margin: 2px 0; text-align: left; font-size: 15px; color: #c0392b;">     $4</p>
+        <p style="margin: 8px 0 2px 0; text-align: left; font-size: 15px;">📍 $5</p>
+        <p style="margin: 2px 0; text-align: left; font-size: 15px;">$6 $7</p>
+    </div>
+
+<!-- 主体Flexbox布局 -->
+<div style="display: flex; flex-wrap: wrap; gap: 20px; box-sizing: border-box;">
+
+        <!-- 基础信息 -->
+        <div style="background: rgba(255,255,255,0.8); padding: 18px; border-radius: 12px; border: 1px solid #d9e2ec; flex: 1 1 300px; box-sizing: border-box;">
+            <h3 style="margin: 0 0 12px 0; color: #2c3e50; border-bottom: 2px solid #b0c4de; padding-bottom: 8px;">
+                📜 基础信息
+            </h3>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>👤 姓名:</strong> $8</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>👾 种族:</strong> $9</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>💀 年龄:</strong> $10</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>🗽 身高:</strong> $11</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>⚖️ 体重:</strong> $12</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>📏 三围:</strong> $13</p>
+        </div>
+
+        <!-- 角色档案 -->
+        <div style="background: rgba(255,255,255,0.8); padding: 18px; border-radius: 12px; border: 1px solid #d9e2ec; flex: 1 1 300px; box-sizing: border-box;">
+            <h3 style="margin: 0 0 12px 0; color: #2c3e50; border-bottom: 2px solid #b0c4de; padding-bottom: 8px;">
+                ⚜️ 角色档案
+            </h3>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>💡当前任务/目标:</strong> $14</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>🎖 冒险家等级:</strong> $15</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>📚 习得技能:</strong> $16</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>⚔️ 职业:</strong> $17</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>🏷️ 身份:</strong> $18</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>🔍 特殊状态:</strong> $19</p>
+        </div>
+
+<!-- 声望与内心 -->
+<div style="background: rgba(255,255,255,0.8); padding: 18px; border-radius: 12px; border: 1px solid #d9e2ec; flex: 1 1 300px; box-sizing: border-box;">
+    <details>
+        <summary style="cursor: pointer; display: flex; align-items: center;">
+            <h3 style="margin: 0 0 12px 0; color: #2c3e50; border-bottom: 2px solid #b0c4de; padding-bottom: 8px; width: 100%; margin-left: 8px;">
+                🎭 声望与内心
+            </h3>
+        </summary>
+        <div style="margin-top: 10px;">
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>💰 财务状态:</strong> $20</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>👍🏻 明面声望:</strong> $21</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>👎🏻 暗地声望:</strong> $22</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>🤫 当前内心:</strong> $23</p>
+        </div>
+    </details>
+</div>
+
+<!-- 核心属性 -->
+<div style="background: rgba(255,255,255,0.8); padding: 18px; border-radius: 12px; border: 1px solid #d9e2ec; flex: 1 1 300px; box-sizing: border-box;">
+    <details>
+        <summary style="cursor: pointer; display: flex; align-items: center;">
+            <h3 style="margin: 0 0 12px 0; color: #2c3e50; border-bottom: 2px solid #b0c4de; padding-bottom: 8px; width: 100%; margin-left: 8px;">
+                ❤️ 核心属性
+            </h3>
+        </summary>
+        <div style="margin-top: 10px;">
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>💪🏻 力量:</strong> $24</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>🦵🏻 敏捷:</strong> $25</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>🫁 体质:</strong> $26</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>🧠 智力:</strong> $27</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>🫀 意志:</strong> $28</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>🦷 痛阈值:</strong> $29</p>
+        </div>
+    </details>
+</div>
+
+<!-- 整体外观 -->
+<div style="background: rgba(255,255,255,0.8); padding: 18px; border-radius: 12px; border: 1px solid #d9e2ec; flex: 1 1 300px; box-sizing: border-box;">
+    <details>
+        <summary style="cursor: pointer; display: flex; align-items: center;">
+            <h3 style="margin: 0 0 12px 0; color: #2c3e50; border-bottom: 2px solid #b0c4de; padding-bottom: 8px; width: 100%; margin-left: 8px;">
+                🪞 整体外观
+            </h3>
+        </summary>
+        <div style="margin-top: 10px;">
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>💃🏻 整体印象与姿态:</strong> $30</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>💇🏻‍♀️ 发型与妆容:</strong> $31</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>👀 面部表情与眼神:</strong> $32</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>👄 唇与口部:</strong> $33</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>📿 颈项与锁骨:</strong> $34</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>💅🏻 手部:</strong> $35</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>🪡 纹身与印记:</strong> $36</p>
+        </div>
+    </details>
+</div>
+
+<!-- 衣着状态 -->
+<div style="background: rgba(255,255,255,0.8); padding: 18px; border-radius: 12px; border: 1px solid #d9e2ec; flex: 1 1 300px; box-sizing: border-box;">
+    <details>
+        <summary style="cursor: pointer; display: flex; align-items: center;">
+            <h3 style="margin: 0 0 12px 0; color: #2c3e50; border-bottom: 2px solid #b0c4de; padding-bottom: 8px; width: 100%; margin-left: 8px;">
+                👙 衣着状态
+            </h3>
+        </summary>
+        <div style="margin-top: 10px;">
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>上身:</strong> $37</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>下身:</strong> $38</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>袜子:</strong> $39</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>鞋子:</strong> $40</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>配饰:</strong> $41</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>胸罩:</strong> $42</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>内裤:</strong> $43</p>
+        </div>
+    </details>
+</div>
+
+<!-- 身体状态 -->
+<div style="background: rgba(255,255,255,0.8); padding: 18px; border-radius: 12px; border: 1px solid #d9e2ec; flex: 1 1 300px; box-sizing: border-box;">
+    <details>
+        <summary style="cursor: pointer; display: flex; align-items: center;">
+            <h3 style="margin: 0 0 12px 0; color: #2c3e50; border-bottom: 2px solid #b0c4de; padding-bottom: 8px; width: 100%; margin-left: 8px;">
+               🧍🏻‍♀️ 身体状态
+           </h3>
+        </summary>
+        <div style="margin-top: 10px;">
+            <div style="display: flex; flex-wrap: wrap; gap: 5px 20px; box-sizing: border-box;">
+                <p style="margin: 5px 0; color: #34495e; font-size: 15px;"><strong>💋 口唇状态:</strong> $44</p>
+                <p style="margin: 5px 0; color: #34495e; font-size: 15px;"><strong>🍈 胸部状态:</strong> $45</p>
+                <p style="margin: 5px 0; color: #34495e; font-size: 15px;"><strong>⏳ 腰腹背部:</strong> $46</p>
+                <p style="margin: 5px 0; color: #34495e; font-size: 15px;"><strong>🍑 臀部状态:</strong> $47</p>
+                <p style="margin: 5px 0; color: #34495e; font-size: 15px;"><strong>👣 腿部与足踝:</strong> $48</p>
+                <p style="margin: 5px 0; color: #34495e; font-size: 15px;"><strong>💧 阴部状态:</strong> $49</p>
+                <p style="margin: 5px 0; color: #34495e; font-size: 15px;"><strong>🍆 阴茎状态:</strong> $50</p>
+                <p style="margin: 5px 0; color: #34495e; font-size: 15px;"><strong>🏵 子宫状态:</strong> $51</p>
+                <p style="margin: 5px 0; color: #34495e; font-size: 15px;"><strong>💮 肛门状态:</strong> $52</p>
+        </div>
+    </details>
+</div>
+
+<!-- 性癖 -->
+<div style="background: rgba(255,255,255,0.8); padding: 18px; border-radius: 12px; border: 1px solid #d9e2ec; flex: 1 1 300px; box-sizing: border-box;">
+    <details>
+        <summary style="cursor: pointer; display: flex; align-items: center;">
+            <h3 style="margin: 0 0 12px 0; color: #2c3e50; border-bottom: 2px solid #b0c4de; padding-bottom: 8px; width: 100%; margin-left: 8px;">
+                💕 性癖
+            </h3>
+        </summary>
+        <div style="margin-top: 10px;">
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>⛓️ 受虐欲:</strong> $53</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>🤳🏻 暴露欲:</strong> $54</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>🥀 身份凌辱欲:</strong> $55</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>🪢 紧缚欲:</strong> $56</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>🥒 异物欲:</strong> $57</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>🥛 吞食欲:</strong> $58</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>🗣️ 音色欲:</strong> $59</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>👽 异种欲:</strong> $60</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>😳 羞耻痛快欲:</strong> $61</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>👥 公众展示欲:</strong> $62</p>
+        </div>
+    </details>
+</div>
+        
+<!-- 其他信息 -->
+<div style="background: rgba(255,255,255,0.8); padding: 18px; border-radius: 12px; border: 1px solid #d9e2ec; flex-basis: 100%; box-sizing: border-box;">
+    <details>
+        <summary style="cursor: pointer; display: flex; align-items: center;">
+            <h3 style="margin: 0 0 12px 0; color: #2c3e50; border-bottom: 2px solid #b0c4de; padding-bottom: 8px; width: 100%; margin-left: 8px;">
+                🪧 其他信息
+            </h3>
+        </summary>
+        <div style="margin-top: 10px;">
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>📋 已签订契约:</strong> $63</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>🤸🏻‍♀️ 当前动作细节:</strong> $64</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>🌸 气息/体香:</strong> $65</p>
+            <p style="margin: 8px 0; color: #34495e; font-size: 15px;"><strong>🌳 环境互动:</strong> $66</p>
+        </div>
+    </details>
+</div>
+
+    </div>
+</div>

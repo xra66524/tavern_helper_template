@@ -1738,7 +1738,7 @@
         ```
         <body>
           <script>
-            $('body').load('http://localhost:5500/dist/界面/状态栏/index.html')
+            $('body').load('https://testingcf.jsdelivr.net/gh/xra66524/tavern_helper_template/dist/界面/状态栏/index.html')
           </script>
         </body>
         ```
@@ -1763,6 +1763,6 @@
         启用: true
         类型: 脚本
         内容: |-
-          import 'http://localhost:5500/dist/群友群穿/index.js';
+          import 'https://testingcf.jsdelivr.net/gh/xra66524/tavern_helper_template/dist/群友群穿/index.js';
 
     变量: {}

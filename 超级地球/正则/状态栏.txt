@@ -1,0 +1,632 @@
+```html
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <style>
+    :root {
+      --bg-color: #f0f4f8;
+      --card-bg: #ffffff;
+      --text-main: #2c3e50;
+      --text-sub: #7f8c8d;
+      --accent-color: #3498db;
+      --accent-light: #e1f0fa;
+      --danger-color: #e74c3c;
+      --warning-color: #f39c12; /* Orange */
+      --yellow-color: #f1c40f;
+      --success-color: #2ecc71;
+      --border-radius: 8px;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    body {
+      margin: 0;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* 布局容器 */
+    .container {
+      display: grid;
+      grid-template-columns: 300px 1fr 320px; /* 左中右布局调整 */
+      gap: 16px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    /* 通用卡片 */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(225, 240, 250, 0.8);
+      position: relative;
+    }
+
+    .card-header {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--accent-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* 顶部通栏 - 动态光照背景 */
+    .header-bar {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #2c3e50; /* 默认 */
+      color: white;
+      padding: 16px 24px;
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: background-color 1s ease; /* 平滑过渡 */
+    }
+
+    .time-display { font-size: 20px; font-weight: 700; letter-spacing: 0.5px; }
+    .location-weather { display: flex; gap: 24px; font-size: 14px; opacity: 0.95; font-weight: 500;}
+    .location-weather span { display: flex; align-items: center; gap: 6px; }
+
+    /* 属性网格 */
+    .attr-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .attr-item { background: var(--bg-color); padding: 6px; border-radius: 4px; text-align: center; }
+    .attr-label { font-size: 11px; color: var(--text-sub); margin-bottom: 2px; }
+    .attr-val { font-size: 15px; font-weight: 700; color: var(--text-main); }
+
+    .info-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 13px; border-bottom: 1px dashed #f0f0f0; padding-bottom: 4px;}
+    .info-label { color: var(--text-sub); }
+    .info-val { font-weight: 500; text-align: right; }
+
+    /* 状态条 */
+    .bar-container { margin-bottom: 8px; }
+    .bar-header { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 3px; color: var(--text-sub); }
+    .progress-bg { height: 6px; background: #eee; border-radius: 3px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--accent-color); width: 0%; transition: width 0.3s ease, background-color 0.3s ease; }
+
+    /* 颜色类 */
+    .bg-success { background: var(--success-color); }
+    .bg-warning { background: var(--warning-color); }
+    .bg-danger { background: var(--danger-color); }
+    .bg-yellow { background: var(--yellow-color); }
+
+    /* 身体状态可视化区域 */
+    .body-status-container {
+      display: flex;
+      gap: 12px;
+    }
+    .body-visual {
+      width: 100px;
+      height: 220px;
+      flex-shrink: 0;
+      position: relative;
+      /* background: #f9f9f9; */
+    }
+    .body-part {
+      position: absolute;
+      background: #ddd;
+      border: 1px solid #fff;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: rgba(0,0,0,0.3);
+      font-weight: bold;
+    }
+    /* 简单的人体结构布局 */
+    .bp-head { top: 0; left: 35px; width: 30px; height: 30px; border-radius: 50%; }
+    .bp-neck { top: 32px; left: 40px; width: 20px; height: 10px; }
+    .bp-torso { top: 44px; left: 25px; width: 50px; height: 70px; border-radius: 8px 8px 4px 4px; }
+    .bp-larm { top: 44px; left: 0; width: 20px; height: 80px; border-radius: 4px; }
+    .bp-rarm { top: 44px; left: 80px; width: 20px; height: 80px; border-radius: 4px; }
+    .bp-groin { top: 116px; left: 30px; width: 40px; height: 20px; border-radius: 0 0 10px 10px;}
+    .bp-lleg { top: 140px; left: 25px; width: 22px; height: 80px; border-radius: 4px; }
+    .bp-rleg { top: 140px; left: 53px; width: 22px; height: 80px; border-radius: 4px; }
+
+    .body-text-list {
+      flex: 1;
+      overflow-y: auto;
+      max-height: 220px;
+      font-size: 12px;
+    }
+    .body-text-item {
+      margin-bottom: 6px;
+      border-bottom: 1px solid #f5f5f5;
+      padding-bottom: 2px;
+    }
+    .bt-header { display: flex; justify-content: space-between; font-weight: 600; }
+    .bt-desc { font-size: 11px; color: var(--text-sub); }
+
+    /* 着装列表 */
+    .equip-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 12px; }
+    .equip-item { background: #f8f9fa; padding: 4px 8px; border-radius: 4px; border: 1px solid #eee; }
+    .equip-slot { color: #999; font-size: 10px; display: block; }
+
+    /* 数字身份 */
+    .digital-persona {
+      background: #222;
+      color: #0f0;
+      font-family: monospace;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      border: 1px solid #333;
+    }
+    .dp-header { color: #fff; border-bottom: 1px solid #444; padding-bottom: 4px; margin-bottom: 6px; display: flex; justify-content: space-between;}
+    .dp-row { display: flex; justify-content: space-between; margin-bottom: 2px; }
+
+    /* 列表通用 */
+    .scroll-list { list-style: none; padding: 0; margin: 0; max-height: 200px; overflow-y: auto; }
+    .list-item { padding: 6px 0; border-bottom: 1px solid #eee; font-size: 12px; }
+    .list-item:last-child { border-bottom: none; }
+
+    /* 任务 */
+    .quest-active { border-left: 3px solid var(--accent-color); padding-left: 8px; background: #fbfbfb; margin-bottom: 4px; }
+    .quest-done { border-left: 3px solid #ccc; padding-left: 8px; color: #999; text-decoration: line-through; }
+
+    /* 信息流 */
+    .info-item { font-size: 12px; margin-bottom: 6px; }
+    .info-meta { font-size: 10px; color: #aaa; display: flex; gap: 8px; }
+    .info-content { color: var(--text-main); }
+    .info-tag-a { color: var(--danger-color); font-weight: bold; } /* 直接感知 */
+    .info-tag-b { color: var(--accent-color); } /* 间接获取 */
+    .info-tag-c { color: var(--warning-color); } /* 逻辑推导 */
+
+    /* 摘要 */
+    .summary-text { font-size: 12px; color: #555; line-height: 1.4; background: #fffbe6; padding: 8px; border-radius: 4px; border: 1px solid #faeec5; }
+
+    /* 响应式 */
+    @media (max-width: 1200px) {
+      .container { grid-template-columns: 1fr 1fr; }
+      .header-bar { grid-column: 1 / -1; }
+    }
+    @media (max-width: 800px) {
+      .container { grid-template-columns: 1fr; }
+    }
+
+    /* 滚动条 */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 2px; }
+  </style>
+
+  <script type="module">
+    const get = (obj, path, def) => _.get(obj, path, def);
+
+    // 辅助：根据完整度获取颜色 (0:Red -> 100:Green)
+    function getHealthColor(val) {
+      // Simple HSL interpolation: 0=0(Red), 100=120(Green)
+      const hue = Math.max(0, Math.min(120, (val / 100) * 120));
+      return `hsl(${hue}, 70%, 50%)`;
+    }
+
+    function populateCharacterData() {
+      const all_variables = getAllVariables();
+      const sd = get(all_variables, 'stat_data', {});
+
+      // --- 1. 世界与光照 ---
+      const world = get(sd, '世界', {});
+      const time = get(world, '时空锚点', {});
+      const weather = get(world, '环境场.气象', {});
+      const loc = get(world, '环境场.地点信息', {});
+
+      $('#time-str').text(`${time.年}年${time.月}月${time.日}日 ${time.周几} ${String(time.时).padStart(2,'0')}:${String(time.分).padStart(2,'0')}`);
+      $('#weather-str').text(`${weather.天气} ${weather.温度}°C 💧${weather.湿度}%`);
+      $('#loc-str').text(`${loc.国家}·${loc.城市}·${loc.区域}`);
+
+      // 光照度动态背景
+      const light = get(time, '光照度', 50);
+      // 深蓝(HSL 220, 30%, 20%) -> 浅蓝(HSL 200, 80%, 60%)
+      const h = 220 - (light / 100) * 20; // 220 -> 200
+      const s = 30 + (light / 100) * 50;  // 30 -> 80
+      const l = 20 + (light / 100) * 40;  // 20 -> 60
+      $('.header-bar').css('background-color', `hsl(${h}, ${s}%, ${l}%)`);
+
+      // --- 2. 用户基础 ---
+      const user = get(sd, '用户', {});
+      const base = get(user, '基础信息', {});
+      $('#u-name').text(base.姓名);
+      $('#u-nation').text(base.国籍);
+      $('#u-job').text(base.职业);
+      $('#u-class').text(base.社会阶层);
+      $('#u-age').text(base.年龄);
+      $('#u-desc').text(base.外貌特征);
+
+      // 属性
+      ['STR','CON','SIZ','DEX','APP','INT','POW','EDU','LUC'].forEach(k => {
+        $(`#attr-${k}`).text(get(user, `属性.${k}`, 50));
+      });
+
+      // --- 3. 生理代谢 ---
+      const meta = get(user, '生理代谢', {});
+
+      // HP/MP/Libido
+      const setBar = (id, cur, max, colorClass) => {
+        const pct = Math.min(100, (cur/max)*100);
+        $(`#${id}-text`).text(`${cur}/${max}`);
+        $(`#${id}-bar`).css('width', `${pct}%`).attr('class', `progress-fill ${colorClass}`);
+      };
+
+      const hp = get(meta, '生命值', [10,10]);
+      setBar('hp', hp[0], hp[1], 'bg-danger');
+
+      const mp = get(meta, '精力值', [10,10]);
+      setBar('mp', mp[0], mp[1], 'bg-success'); // Blue/Green
+
+      const lib = get(meta, '性致', [0,50]);
+      setBar('lib', lib[0], lib[1], 'bg-warning'); // Pink/Purple in CSS override? Using warning for now
+
+      // 需求
+      const needs = [
+        {k:'饱食度',id:'hunger'},{k:'水分',id:'thirst'},{k:'洁净度',id:'hygiene'},
+        {k:'压力值',id:'stress'},{k:'疲劳度',id:'fatigue'}
+      ];
+      needs.forEach(n => {
+        const val = get(meta, n.k, 50);
+        $(`#need-${n.id}-val`).text(val + '%');
+        let color = 'bg-success';
+        if (n.id==='stress'||n.id==='fatigue') {
+          if(val>80) color='bg-danger'; else if(val>50) color='bg-warning';
+        } else {
+          if(val<20) color='bg-danger'; else if(val<50) color='bg-warning';
+        }
+        $(`#need-${n.id}-bar`).css('width', `${val}%`).attr('class', `progress-fill ${color}`);
+      });
+
+      // 排泄
+      const toilet = get(meta, '排泄欲望', {});
+      $('#need-poo').text(get(toilet, '便意', 0) + '%');
+      $('#need-pee').text(get(toilet, '尿意', 0) + '%');
+
+      // --- 4. 身体可视化 ---
+      const body = get(user, '解剖学状态', {});
+      const parts = {
+        '头部': 'head', '颈部': 'neck', '躯干': 'torso',
+        '左臂': 'larm', '右臂': 'rarm', '私处': 'groin',
+        '左腿': 'lleg', '右腿': 'rleg'
+      };
+
+      let bodyTextHtml = '';
+      Object.entries(parts).forEach(([zh, en]) => {
+        const data = get(body, zh, {完整度:100, 状态标签:[], 感觉描述:'无'});
+        const color = getHealthColor(data.完整度);
+        $(`.bp-${en}`).css('background-color', color);
+
+        bodyTextHtml += `
+          <div class="body-text-item">
+            <div class="bt-header">
+              <span>${zh}</span>
+              <span style="color:${color}">${data.完整度}%</span>
+            </div>
+            <div class="bt-desc">${data.状态标签.join(', ')} | ${data.感觉描述}</div>
+          </div>
+        `;
+      });
+      $('#body-text-list').html(bodyTextHtml);
+
+      // --- 5. 认知与精神 ---
+      const mind = get(user, '认知与精神', {});
+      const mh = get(mind, '心理健康', {});
+      $('#mind-status').text(mh.当前状态);
+      $('#mind-res').text(mh.心理韧性);
+      $('#mind-mood').text(get(mind, '心情', '待定'));
+      $('#mind-thought').text(get(mind, '当前念头', '...'));
+      $('#mind-trauma').text(get(mh, '心理创伤', []).join(', ') || '无');
+
+      // --- 6. 数字身份 ---
+      const digital = get(user, '数字身份', {});
+      let digHtml = '';
+      Object.entries(digital).forEach(([id, d]) => {
+        digHtml += `
+          <div class="digital-persona">
+            <div class="dp-header"><span>${d.平台}</span><span>${d.网名}</span></div>
+            <div class="dp-row"><span>粉丝: ${d.粉丝数}</span><span>风险: ${d.风险等级}</span></div>
+            <div style="font-size:10px; color:#aaa">"${d.发布内容}"</div>
+          </div>
+        `;
+      });
+      if(!digHtml) digHtml = '<div style="font-size:12px;color:#999">无活跃数字身份</div>';
+      $('#digital-list').html(digHtml);
+
+      // --- 7. 着装 ---
+      const attire = get(user, '当前着装', {});
+      const attireMap = [
+        {k:'头部',l:'头'}, {k:'眼部',l:'眼'}, {k:'颈部',l:'颈'},
+        {k:'外套',l:'外'}, {k:'上身外层',l:'上外'}, {k:'上身内层',l:'上内'},
+        {k:'手部',l:'手'}, {k:'下身外层',l:'下外'}, {k:'下身内层',l:'下内'},
+        {k:'袜',l:'袜'}, {k:'鞋',l:'鞋'}, {k:'饰品',l:'饰'}
+      ];
+      let attireHtml = '';
+      attireMap.forEach(i => {
+        let val = get(attire, i.k, '无');
+        if(Array.isArray(val)) val = val.join(', ');
+        attireHtml += `
+          <div class="equip-item">
+            <span class="equip-slot">${i.k}</span>
+            <div style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${val}</div>
+          </div>
+        `;
+      });
+      $('#attire-grid').html(attireHtml);
+
+      // --- 8. 资产与负重 ---
+      const inv = get(user, '物资与负重', {});
+      const assets = get(inv, '资产', {});
+      const curr = get(assets, '主货币', 'CNY');
+      $('#money-cash').text(`${curr} ${assets.现金}`);
+      $('#money-bank').text(`${curr} ${assets.电子存款}`);
+      $('#money-debt').text(`${curr} ${assets.债务}`);
+      $('#money-score').text(assets.信用评分);
+
+      // 负重
+      const load = get(inv, '负重', {});
+      const loadPct = Math.min(100, (load.当前/load.上限)*100);
+      let loadClass = 'bg-success';
+      if(load.惩罚等级===1) loadClass = 'bg-yellow';
+      if(load.惩罚等级===2) loadClass = 'bg-warning'; // Orange
+      if(load.惩罚等级===3) loadClass = 'bg-danger';
+      $('#load-text').text(`${load.当前} / ${load.上限} kg (Lv.${load.惩罚等级})`);
+      $('#load-bar').css('width', `${loadPct}%`).attr('class', `progress-fill ${loadClass}`);
+
+      // 装备栏
+      const equip = get(inv, '背包系统.装备栏', {});
+      $('#eq-main').text(equip.主手 || '空');
+      $('#eq-off').text(equip.副手 || '空');
+      $('#eq-pocket').text((equip.随身口袋||[]).join(', ') || '空');
+
+      // 背包物品 (简单计算格数：每个物品占格x数量)
+      const bagItems = get(inv, '背包系统.物品清单', {});
+      let usedSlots = 0;
+      let bagHtml = '';
+      Object.entries(bagItems).forEach(([n, d]) => {
+        const slots = (d.占格||1) * (d.数量||1);
+        usedSlots += slots;
+        bagHtml += `<li class="list-item" style="display:flex;justify-content:space-between"><span>${n} x${d.数量}</span><span style="color:#aaa">${d.重量}kg</span></li>`;
+      });
+      $('#bag-slots').text(`已用空间: ${usedSlots}格`);
+      $('#bag-list').html(bagHtml || '<li class="list-item">背包空空如也</li>');
+
+      // --- 9. 社会关系 ---
+      const npcs = get(sd, '社交网络', {});
+      let npcHtml = '';
+      Object.entries(npcs).forEach(([id, d]) => {
+        const profile = d.档案||{};
+        const rel = d.关系||{};
+        const cog = d.认知状态||{};
+        npcHtml += `
+          <li class="list-item">
+            <div style="display:flex;justify-content:space-between;font-weight:600">
+              <span>${profile.姓名||id} <span style="font-weight:400;color:#888">(${profile.职业})</span></span>
+              <span style="color:var(--accent-color)">♥${rel.好感度}</span>
+            </div>
+            <div style="font-size:11px;color:#666;margin-top:2px;">
+              关系:${rel.显性关系} | 信任:${rel.信任度} | 支配:${rel.支配值}
+            </div>
+            <div style="font-size:10px;color:#aaa;margin-top:1px;">
+               ${cog.推测当前行为 || '未知行踪'}
+            </div>
+          </li>
+        `;
+      });
+      $('#npc-list').html(npcHtml || '<li class="list-item">暂无社交记录</li>');
+
+      // --- 10. 任务与信息流 ---
+      const logs = get(sd, '事务日志', {});
+      let questHtml = '';
+      // 分离进行中和已结束
+      const activeQ = [], doneQ = [];
+      Object.entries(logs).forEach(([id, q]) => {
+        if(q.状态==='进行中') activeQ.push(q); else doneQ.push(q);
+      });
+
+      if(activeQ.length) {
+        questHtml += '<div style="font-weight:bold;margin:4px 0;">进行中</div>';
+        activeQ.forEach(q => {
+          questHtml += `<div class="quest-active"><div>${q.标题}</div><div style="font-size:11px;color:#666">${q.目标}</div></div>`;
+        });
+      }
+      if(doneQ.length) {
+        questHtml += '<div style="font-weight:bold;margin:4px 0;color:#999">历史记录</div>';
+        doneQ.forEach(q => {
+          questHtml += `<div class="quest-done"><div>${q.标题} (${q.状态})</div></div>`;
+        });
+      }
+      $('#quest-list').html(questHtml || '<div class="list-item">无任务记录</div>');
+
+      // 信息流
+      const info = get(sd, '资讯流', []);
+      let infoHtml = '';
+      // 取最近10条，倒序
+      info.slice().reverse().slice(0, 10).forEach(i => {
+        let tagClass = 'info-tag-b';
+        if(i.来源类型 && i.来源类型.includes('A类')) tagClass = 'info-tag-a';
+        if(i.来源类型 && i.来源类型.includes('C类')) tagClass = 'info-tag-c';
+
+        infoHtml += `
+          <div class="info-item">
+            <div class="info-meta">
+              <span class="${tagClass}">[${i.来源类型.split(':')[0]}]</span>
+              <span>${i.可信度}</span>
+            </div>
+            <div class="info-content">${i.标题}: ${i.内容}</div>
+          </div>
+        `;
+      });
+      $('#info-list').html(infoHtml || '<div class="list-item">暂无情报</div>');
+
+      // 摘要
+      const sum = get(sd, '摘要', []);
+      $('#summary-text').text(sum[sum.length-1] || '暂无剧情摘要');
+    }
+
+    async function init() {
+      await waitGlobalInitialized('Mvu');
+      populateCharacterData();
+      eventOn(Mvu.events.VARIABLE_UPDATE_ENDED, populateCharacterData);
+    }
+    $(errorCatched(init));
+  </script>
+</head>
+<body>
+  <div class="container">
+
+    <!-- 顶部状态栏 -->
+    <div class="header-bar">
+      <div>
+        <div class="time-display" id="time-str">2025年1月1日 周一 08:00</div>
+        <div style="font-size:12px; opacity:0.8; margin-top:4px;">光照度决定背景色</div>
+      </div>
+      <div class="location-weather">
+        <span id="weather-str">☀ 晴 20°C 💧50%</span>
+        <span id="loc-str">国家·城市·区域</span>
+      </div>
+    </div>
+
+    <!-- 左栏：角色生理与状态 -->
+    <div class="left-col">
+      <div class="card">
+        <div class="card-header">基础档案</div>
+        <div class="info-row"><span class="info-label">姓名</span><span class="info-val" id="u-name"></span></div>
+        <div class="info-row"><span class="info-label">国籍</span><span class="info-val" id="u-nation"></span></div>
+        <div class="info-row"><span class="info-label">职业</span><span class="info-val" id="u-job"></span></div>
+        <div class="info-row"><span class="info-label">阶层</span><span class="info-val" id="u-class"></span></div>
+        <div class="info-row"><span class="info-label">年龄</span><span class="info-val" id="u-age"></span></div>
+        <div style="font-size:11px; color:#666; margin-top:4px; font-style:italic;" id="u-desc"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">解剖学状态</div>
+        <div class="body-status-container">
+          <div class="body-visual">
+            <div class="body-part bp-head"></div>
+            <div class="body-part bp-neck"></div>
+            <div class="body-part bp-larm"></div>
+            <div class="body-part bp-torso"></div>
+            <div class="body-part bp-rarm"></div>
+            <div class="body-part bp-groin"></div>
+            <div class="body-part bp-lleg"></div>
+            <div class="body-part bp-rleg"></div>
+          </div>
+          <div class="body-text-list" id="body-text-list">
+            <!-- 动态填充 -->
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">着装装备</div>
+        <div style="margin-bottom:8px; font-weight:600; font-size:12px;">当前装备</div>
+        <div class="info-row"><span class="info-label">主手</span><span class="info-val" id="eq-main"></span></div>
+        <div class="info-row"><span class="info-label">副手</span><span class="info-val" id="eq-off"></span></div>
+        <div class="info-row"><span class="info-label">口袋</span><span class="info-val" id="eq-pocket"></span></div>
+        <div style="margin:8px 0 4px 0; font-weight:600; font-size:12px;">全身着装</div>
+        <div class="equip-grid" id="attire-grid">
+          <!-- 动态 -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 中栏：核心数值 -->
+    <div class="mid-col">
+      <div class="card">
+        <div class="card-header">状态核心</div>
+
+        <!-- 条形图 -->
+        <div class="bar-container"><div class="bar-header"><span>HP (肉体)</span><span id="hp-text"></span></div><div class="progress-bg"><div id="hp-bar" class="progress-fill"></div></div></div>
+        <div class="bar-container"><div class="bar-header"><span>Focus (精力)</span><span id="mp-text"></span></div><div class="progress-bg"><div id="mp-bar" class="progress-fill"></div></div></div>
+        <div class="bar-container"><div class="bar-header"><span>Libido (性致)</span><span id="lib-text"></span></div><div class="progress-bg"><div id="lib-bar" class="progress-fill"></div></div></div>
+
+        <div class="attr-grid" style="margin-top:12px;">
+           <div class="attr-item"><div class="attr-label">STR</div><div class="attr-val" id="attr-STR"></div></div>
+           <div class="attr-item"><div class="attr-label">CON</div><div class="attr-val" id="attr-CON"></div></div>
+           <div class="attr-item"><div class="attr-label">SIZ</div><div class="attr-val" id="attr-SIZ"></div></div>
+           <div class="attr-item"><div class="attr-label">DEX</div><div class="attr-val" id="attr-DEX"></div></div>
+           <div class="attr-item"><div class="attr-label">APP</div><div class="attr-val" id="attr-APP"></div></div>
+           <div class="attr-item"><div class="attr-label">INT</div><div class="attr-val" id="attr-INT"></div></div>
+           <div class="attr-item"><div class="attr-label">POW</div><div class="attr-val" id="attr-POW"></div></div>
+           <div class="attr-item"><div class="attr-label">EDU</div><div class="attr-val" id="attr-EDU"></div></div>
+           <div class="attr-item"><div class="attr-label">LUC</div><div class="attr-val" id="attr-LUC"></div></div>
+        </div>
+
+        <div style="margin-top:12px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;">
+           <div><div class="bar-header"><span>饱食</span><span id="need-hunger-val"></span></div><div class="progress-bg"><div id="need-hunger-bar" class="progress-fill"></div></div></div>
+           <div><div class="bar-header"><span>水分</span><span id="need-thirst-val"></span></div><div class="progress-bg"><div id="need-thirst-bar" class="progress-fill"></div></div></div>
+           <div><div class="bar-header"><span>洁净</span><span id="need-hygiene-val"></span></div><div class="progress-bg"><div id="need-hygiene-bar" class="progress-fill"></div></div></div>
+           <div><div class="bar-header"><span>压力</span><span id="need-stress-val"></span></div><div class="progress-bg"><div id="need-stress-bar" class="progress-fill"></div></div></div>
+           <div><div class="bar-header"><span>疲劳</span><span id="need-fatigue-val"></span></div><div class="progress-bg"><div id="need-fatigue-bar" class="progress-fill"></div></div></div>
+           <div style="display:flex; justify-content:space-between; align-items:flex-end; font-size:10px; color:#888;">
+             <span>便:<span id="need-poo"></span></span><span>尿:<span id="need-pee"></span></span>
+           </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">认知与精神</div>
+        <div class="info-row"><span class="info-label">状态</span><span class="info-val" id="mind-status"></span></div>
+        <div class="info-row"><span class="info-label">韧性</span><span class="info-val" id="mind-res"></span></div>
+        <div class="info-row"><span class="info-label">心情</span><span class="info-val" id="mind-mood"></span></div>
+        <div class="info-row"><span class="info-label">念头</span><span class="info-val" id="mind-thought" style="max-width:200px;text-align:right;"></span></div>
+        <div class="info-row"><span class="info-label">创伤</span><span class="info-val" id="mind-trauma" style="color:var(--danger-color)"></span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">资产账户</div>
+        <div class="info-row"><span class="info-label">现金</span><span class="info-val" id="money-cash"></span></div>
+        <div class="info-row"><span class="info-label">存款</span><span class="info-val" id="money-bank"></span></div>
+        <div class="info-row"><span class="info-label">债务</span><span class="info-val" id="money-debt" style="color:var(--danger-color)"></span></div>
+        <div class="info-row"><span class="info-label">信用分</span><span class="info-val" id="money-score"></span></div>
+      </div>
+    </div>
+
+    <!-- 右栏：社交与信息 -->
+    <div class="right-col">
+      <div class="card">
+        <div class="card-header">社交网络</div>
+        <ul class="scroll-list" id="npc-list"></ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">数字身份</div>
+        <div id="digital-list"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">物资与背包</div>
+        <div class="bar-container">
+          <div class="bar-header"><span>负重惩罚</span><span id="load-text"></span></div>
+          <div class="progress-bg"><div id="load-bar" class="progress-fill"></div></div>
+        </div>
+        <div style="font-size:11px; text-align:right; margin-bottom:4px;" id="bag-slots"></div>
+        <ul class="scroll-list" id="bag-list" style="max-height:150px;"></ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">事务与情报</div>
+        <div style="font-size:12px; font-weight:600; margin-bottom:4px;">情报流</div>
+        <div class="scroll-list" id="info-list" style="max-height:150px; margin-bottom:12px;"></div>
+
+        <div style="font-size:12px; font-weight:600; margin-bottom:4px;">任务日志</div>
+        <div class="scroll-list" id="quest-list" style="max-height:150px;"></div>
+      </div>
+
+      <div class="card" style="background:#fffef0; border-color:#fceeb5;">
+        <div class="card-header" style="border-color:#f7e1a0; color:#b58900;">剧情摘要</div>
+        <div class="summary-text" id="summary-text" style="background:transparent; padding:0; border:none;"></div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
+```

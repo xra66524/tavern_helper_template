@@ -1,0 +1,525 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Character Genesis</title>
+    <style>
+      /* --- 极简主义设计系统 (Minimalist Design System) --- */
+      :root {
+        --bg-color: #f8f9fa;
+        --card-bg: #ffffff;
+        --text-primary: #2d3436;
+        --text-secondary: #636e72;
+        --accent-color: #2d3436;
+        --border-color: #dfe6e9;
+        --input-bg: #f1f2f6;
+        --success-color: #00b894;
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+        --shadow-md: 0 4px 6px rgba(0,0,0,0.04);
+        --radius: 8px;
+      }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        background: transparent;
+        color: var(--text-primary);
+        line-height: 1.5;
+        padding: 15px;
+      }
+
+      /* 修复输入框无法编辑的问题 (针对某些iframe环境) */
+      input, textarea, select {
+        user-select: text !important;
+        -webkit-user-select: text !important;
+      }
+
+      /* 容器 */
+      .container {
+        max-width: 700px;
+        margin: 0 auto;
+        background: var(--bg-color);
+        border-radius: var(--radius);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        overflow: hidden;
+      }
+
+      /* 头部 */
+      .header {
+        background: var(--card-bg);
+        padding: 20px 25px;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .header h1 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
+      }
+
+      /* 卡片区域 */
+      .section {
+        background: var(--card-bg);
+        margin: 15px;
+        padding: 20px;
+        border-radius: var(--radius);
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .section-title {
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 700;
+        color: var(--text-secondary);
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      /* 表单网格 */
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+      }
+      @media (max-width: 500px) { .form-grid { grid-template-columns: 1fr; } }
+
+      .form-group { margin-bottom: 10px; }
+      .form-group label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: var(--text-secondary);
+      }
+
+      /* 输入框 */
+      .input-control {
+        width: 100%;
+        padding: 10px;
+        background: var(--input-bg);
+        border: 1px solid transparent;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        color: var(--text-primary);
+        transition: all 0.2s;
+      }
+      .input-control:focus {
+        background: #fff;
+        border-color: var(--text-secondary);
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(0,0,0,0.05);
+      }
+      textarea.input-control {
+        resize: vertical;
+        min-height: 80px;
+      }
+
+      /* 时间输入组 */
+      .time-inputs {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .time-inputs input {
+        flex: 1;
+      }
+      .time-sep {
+        color: var(--text-secondary);
+        font-weight: bold;
+      }
+
+      /* 属性滑块 */
+      .stat-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+        padding: 8px;
+        border-radius: 6px;
+        transition: background 0.1s;
+      }
+      .stat-row:hover { background: #f8f9fa; }
+
+      .stat-label {
+        width: 60px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--text-primary);
+      }
+      .stat-slider-container {
+        flex: 1;
+        margin: 0 15px;
+      }
+      .stat-slider {
+        width: 100%;
+        height: 4px;
+        background: #dfe6e9;
+        border-radius: 2px;
+        outline: none;
+        -webkit-appearance: none;
+      }
+      .stat-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 16px;
+        height: 16px;
+        background: var(--text-primary);
+        border-radius: 50%;
+        cursor: pointer;
+        transition: transform 0.1s;
+      }
+      .stat-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+      .stat-value {
+        width: 40px;
+        text-align: right;
+        font-family: "SF Mono", "Consolas", monospace;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+      .stat-desc {
+        font-size: 0.7rem;
+        color: #b2bec3;
+        margin-left: 10px;
+        display: none; /* 移动端隐藏，保持简洁 */
+      }
+      @media (min-width: 600px) { .stat-desc { display: inline-block; } }
+
+      /* 按钮 */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s;
+      }
+      .btn-text {
+        background: transparent;
+        color: var(--text-primary);
+        text-decoration: underline;
+      }
+      .btn-text:hover { color: #000; }
+
+      .btn-primary {
+        width: 100%;
+        background: var(--text-primary);
+        color: #fff;
+        padding: 14px;
+        font-size: 1rem;
+        margin-top: 10px;
+      }
+      .btn-primary:hover {
+        background: #000;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      }
+      .btn-primary:disabled {
+        background: #b2bec3;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      /* 底部 */
+      .footer {
+        padding: 20px;
+        text-align: center;
+        background: var(--bg-color);
+        border-top: 1px solid var(--border-color);
+      }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>人物生成</h1>
+        <button class="btn btn-text" onclick="randomizeAll()">🎲 随机重置</button>
+      </div>
+
+      <!-- 属性面板 -->
+      <div class="section">
+        <div class="section-title">
+          核心属性
+          <span style="font-size:0.7em; font-weight:400; text-transform:none">范围 15-90</span>
+        </div>
+        <div id="statsContainer">
+          <!-- 动态生成 -->
+        </div>
+      </div>
+
+      <!-- 身份档案 -->
+      <div class="section">
+        <div class="section-title">身份档案</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>姓名</label>
+            <input type="text" class="input-control" id="uName" placeholder="留空随机生成">
+          </div>
+          <div class="form-group">
+            <label>性别</label>
+            <select class="input-control" id="uGender">
+              <option value="">(随机)</option>
+              <option value="男">男</option>
+              <option value="女">女</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>年龄</label>
+            <input type="number" class="input-control" id="uAge" placeholder="20-50">
+          </div>
+          <div class="form-group">
+            <label>职业</label>
+            <input type="text" class="input-control" id="uJob" placeholder="例如: 侦探, 医生...">
+          </div>
+          <div class="form-group">
+            <label>经济状况</label>
+            <select class="input-control" id="uEconomy">
+              <option value="">(随机)</option>
+              <option value="贫穷">贫穷</option>
+              <option value="温饱">温饱</option>
+              <option value="中产">中产</option>
+              <option value="富裕">富裕</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>性经验</label>
+            <select class="input-control" id="uSexExp">
+              <option value="">(随机)</option>
+              <option value="无">无</option>
+              <option value="少许">少许</option>
+              <option value="丰富">丰富</option>
+            </select>
+          </div>
+          <!-- 新增：初始地点 -->
+          <div class="form-group">
+            <label>初始地点</label>
+            <input type="text" class="input-control" id="uLocation" placeholder="留空随机生成 (如: 阿卡姆市)">
+          </div>
+          <!-- 新增：初始时间 -->
+          <div class="form-group">
+            <label>初始日期</label>
+            <div class="time-inputs">
+              <input type="number" class="input-control" id="uMonth" placeholder="月" min="1" max="12">
+              <span class="time-sep">/</span>
+              <input type="number" class="input-control" id="uDay" placeholder="日" min="1" max="31">
+            </div>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top:15px">
+          <label>背景偏好 / 关键经历</label>
+          <textarea class="input-control" id="uBackground" placeholder="简述你想扮演的角色背景，或留空由系统根据属性自动生成..."></textarea>
+        </div>
+      </div>
+
+      <div class="footer">
+        <button class="btn btn-primary" onclick="submitGenesis()">
+          生成并开始
+        </button>
+        <div style="margin-top:10px; font-size:0.75rem; color:#b2bec3">
+          提交后将自动初始化世界书与变量系统
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const STATS = [
+        { id: 'STR', name: '力量', desc: '肉搏与负重' },
+        { id: 'CON', name: '体质', desc: '健康与耐力' },
+        { id: 'SIZ', name: '体型', desc: '身材与HP' },
+        { id: 'DEX', name: '敏捷', desc: '速度与闪避' },
+        { id: 'APP', name: '外貌', desc: '魅力与印象' },
+        { id: 'INT', name: '智力', desc: '分析与逻辑' },
+        { id: 'POW', name: '意志', desc: '精神抗性' },
+        { id: 'EDU', name: '教育', desc: '知识水平' },
+        { id: 'LUC', name: '幸运', desc: '机运' }
+      ];
+
+      // 初始化
+      $(document).ready(() => {
+        renderStats();
+        randomizeAll(); // 默认随机一次
+      });
+
+      function renderStats() {
+        const $container = $('#statsContainer');
+        $container.empty();
+
+        STATS.forEach(s => {
+          const html = `
+            <div class="stat-row">
+              <div class="stat-label">${s.id}</div>
+              <div class="stat-slider-container">
+                <input type="range" class="stat-slider" id="in-${s.id}"
+                       min="15" max="90" step="5"
+                       oninput="$('#val-${s.id}').text(this.value)">
+              </div>
+              <div class="stat-value" id="val-${s.id}">50</div>
+              <div class="stat-desc">${s.name}</div>
+            </div>
+          `;
+          $container.append(html);
+        });
+      }
+
+      function randomizeAll() {
+        STATS.forEach(s => {
+          // 3d6 * 5 模拟 (15-90)
+          const roll = (Math.floor(Math.random() * 6) + 1 +
+                        Math.floor(Math.random() * 6) + 1 +
+                        Math.floor(Math.random() * 6) + 1) * 5;
+          $(`#in-${s.id}`).val(roll);
+          $(`#val-${s.id}`).text(roll);
+        });
+
+        // 清空文本框，保留选择框为随机
+        $('#uName, #uAge, #uJob, #uBackground, #uLocation, #uMonth, #uDay').val('');
+        $('#uGender, #uEconomy, #uSexExp').val('');
+      }
+
+      // 核心修复：增强版发送函数
+      async function trySendToSillyTavern(text) {
+        console.log("Attempting to send message:", text);
+        let sent = false;
+
+        // 1. 尝试 TavernHelper API (createChatMessages)
+        if (!sent && window.parent && window.parent.createChatMessages) {
+            try {
+                await window.parent.createChatMessages([{ role: 'user', message: text }], {
+                    insert_at: 'end',
+                    refresh: 'affected'
+                });
+                console.log("Success: createChatMessages");
+                sent = true;
+            } catch (e) { console.error("Failed: createChatMessages", e); }
+        }
+
+        // 2. 尝试 executeSlashCommands (新版 API)
+        if (!sent && window.parent && window.parent.executeSlashCommands) {
+            try {
+                // 使用 JSON.stringify 转义换行符，防止命令截断
+                const safeText = JSON.stringify(text);
+                await window.parent.executeSlashCommands(`/send ${safeText}`);
+                console.log("Success: executeSlashCommands");
+                sent = true;
+            } catch (e) { console.error("Failed: executeSlashCommands", e); }
+        }
+
+        // 3. 尝试 triggerSlash (旧版 API)
+        if (!sent && window.parent && window.parent.triggerSlash) {
+            try {
+                const safeText = JSON.stringify(text);
+                await window.parent.triggerSlash(`/send ${safeText}`);
+                console.log("Success: triggerSlash");
+                sent = true;
+            } catch (e) { console.error("Failed: triggerSlash", e); }
+        }
+
+        // 4. 尝试 DOM 注入 (最后的手段，模拟用户输入)
+        if (!sent && window.parent && window.parent.document) {
+            try {
+                const doc = window.parent.document;
+                // 查找输入框和发送按钮 (兼容不同UI版本)
+                const input = doc.querySelector('#send_textarea') || doc.querySelector('textarea[id*="send"]');
+                const sendBtn = doc.querySelector('#send_but') || doc.querySelector('div[id*="send_but"]');
+
+                if (input && sendBtn) {
+                    // 模拟完整的输入事件链，确保 Vue/React 状态更新
+                    input.value = text;
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+
+                    // 延迟点击，等待状态同步
+                    setTimeout(() => sendBtn.click(), 100);
+                    console.log("Success: DOM Injection");
+                    sent = true;
+                }
+            } catch (e) { console.error("Failed: DOM Injection", e); }
+        }
+
+        return sent;
+      }
+
+      async function submitGenesis() {
+        const btn = $('.btn-primary');
+        const originalText = btn.text();
+        btn.text('正在写入现实...').prop('disabled', true);
+
+        // 收集数据
+        const data = {
+          name: $('#uName').val() || '(请随机生成)',
+          gender: $('#uGender').val() || '(请随机生成)',
+          age: $('#uAge').val() || '(请随机生成)',
+          job: $('#uJob').val() || '(根据属性生成)',
+          economy: $('#uEconomy').val() || '(根据职业生成)',
+          sexExp: $('#uSexExp').val() || '(根据设定生成)',
+          location: $('#uLocation').val() || '(请随机生成)',
+          month: $('#uMonth').val() || '(随机)',
+          day: $('#uDay').val() || '(随机)',
+          bg: $('#uBackground').val() || '(请结合属性与职业，创作一段合理的背景故事)'
+        };
+
+        const stats = {};
+        STATS.forEach(s => stats[s.id] = parseInt($(`#in-${s.id}`).val()));
+
+        // 构建核心指令
+        const prompt = `[系统指令: 执行 MVU 初始化程序]
+<user>已提交初始档案，请立即执行以下操作：
+
+1. **设定补全**：
+   - 姓名: ${data.name}
+   - 性别: ${data.gender}
+   - 年龄: ${data.age}
+   - 职业: ${data.job}
+   - 经济: ${data.economy}
+   - 性经验: ${data.sexExp}
+   - 初始地点: ${data.location}
+   - 初始日期: ${data.month}月${data.day}日
+   - 核心属性: ${JSON.stringify(stats)}
+
+2. **背景撰写 (World Info)**：
+   基于上述属性（如STR=${stats.STR}, INT=${stats.INT}）和用户偏好："${data.bg}"，
+   撰写一段约300字的【<user>背景】，需解释其职业来源、性格成因及当前处境。
+   *必须使用自然流畅的小说笔法，而非列表。*
+
+3. **变量实体化 (Variable Update)**：
+   输出 MVU 更新指令，将所有 '待定' (Pending) 状态替换为具体值。
+   - 基础属性必须严格等于上述数值。
+   - 衍生属性 (HP, 负重等) 必须由 Schema 自动计算。
+   - 物品清单必须根据职业发放初始装备 (如: 医生=急救包, 侦探=手电筒)。
+   - 当前着装必须根据职业和经济状况设定。
+   - **世界.时间.日期** 必须更新为设定的日期（若随机则由你决定）。
+   - **世界.环境.当前地点** 必须更新为设定的地点。
+
+请直接以剧情开场或背景介绍开始，并在末尾附带变量更新代码块。`;
+
+        // 执行发送
+        const success = await trySendToSillyTavern(prompt);
+
+        if (success) {
+            btn.text('✅ 指令已发送');
+            setTimeout(() => btn.text(originalText).prop('disabled', false), 2000);
+        } else {
+            console.error("All send methods failed.");
+            navigator.clipboard.writeText(prompt);
+            alert("⚠️ 自动发送失败（API未检测到）。\n\n指令已复制到剪贴板，请手动粘贴发送。");
+            btn.text(originalText).prop('disabled', false);
+        }
+      }
+    </script>
+  </body>
+</html>
+```
